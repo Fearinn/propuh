@@ -1,0 +1,17 @@
+{
+  "name": "propuh",
+  "version": "1.0.0",
+  "description": "",
+  "main": "propuh.js",
+  "scripts": {
+    "build:scss": "sass --no-source-map src/propuh.scss propuh.css",
+    "watch:scss": "sass --no-source-map --watch src/propuh.scss propuh.css",
+    "build": "pnpm run build:scss",
+    "watch": "pnpm run watch:scss"
+  },
+  "author": "Matheus Gomes",
+  "license": "BGA",
+  "devDependencies": {
+    "sass": "^1.83.4"
+  }
+}
