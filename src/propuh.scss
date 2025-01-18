@@ -12,3 +12,70 @@
  * propuh stylesheet
  *
  */
+
+html {
+  --cardWidth: 200px;
+  --cardHeight: 279.4px;
+  --locationWidth: 386.9px;
+  --locationHeight: 240px;
+  --houseHeight: 581.2px;
+}
+
+.pph_gameArea {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.pph_boards {
+  display: grid;
+  grid-template-areas: ". f ." "g e h";
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  .pph_deck {
+    display: none;
+    grid-area: c;
+    height: var(--cardHeight);
+    width: var(--cardWidth);
+  }
+
+  .pph_house {
+    grid-area: e;
+    background-image: url("img/house.jpg");
+    background-size: 100% 100%;
+    height: var(--houseHeight);
+    width: var(--locationWidth);
+  }
+
+  .pph_board {
+    background-size: 100% 100%;
+    height: var(--locationWidth);
+    width: var(--locationHeight);
+  }
+
+  .pph_stove {
+    grid-area: f;
+    background-image: url("img/stove.jpg");
+    height: var(--locationHeight);
+    width: var(--locationWidth);
+  }
+
+  .pph_door {
+    grid-area: g;
+    background-image: url("img/door.jpg");
+  }
+
+  .pph_bed {
+    grid-area: h;
+    background-image: url("img/bed.jpg");
+  }
+}
+
+.pph_hands {
+  width: 100%;
+}
