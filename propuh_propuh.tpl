@@ -11,14 +11,14 @@
 -->
 
 <div id="pph_gameArea" class="pph_gameArea">
+    <div id="pph_hand" class="pph_hand"></div>
     <div id="pph_boards" class="pph_boards">
         <div id="pph_deck" class="pph_deck"></div>
         <div id="pph_house" class="pph_house pph_board"></div>
         <div id="pph_bed" class="pph_bed pph_board"></div>
         <div id="pph_stove" class="pph_stove pph_board"></div>
-        <div id="pph_door" class="pph_door pph_board"></div>
+        <div id="pph_table" class="pph_table pph_board"></div>
     </div>
-    <div id="pph_hands" class="pph_hands"></div>
 </div>
 
 <script type="text/javascript"></script>

@@ -56,20 +56,40 @@ define([
         setupDiv: (card, element) => {
           element.classList.add("pph_trickCard");
         },
-        setupFrontDiv: (card, element) => {},
+        setupFrontDiv: (card, element) => {
+          card.type_arg = Number(card.type_arg);
+          const backgroundPosition = `${card.type_arg * 100}% 0`;
+          element.parentElement.parentElement.style.backgroundPosition =
+            backgroundPosition;
+        },
         setupBackDiv: (card, element) => {},
       });
 
-      this.pph.stocks.trick = new Deck(
+      this.pph.stocks.deck = new Deck(
         this.pph.managers.trick,
         document.getElementById("pph_deck"),
         {
           cardNumber: 28,
-          counter: { position: "center", extraClasses: "text-shadow pph_deckCounter" },
+          counter: {
+            position: "center",
+            extraClasses: "text-shadow pph_deckCounter",
+          },
         }
       );
 
-      this.pph.stocks.trick;
+      console.log(gamedatas.hand);
+
+      this.pph.stocks.hand = new HandStock(
+        this.pph.managers.trick,
+        document.getElementById("pph_hand"),
+        {
+          sort: (a, b) => {
+            return Number(b.type_arg) - Number(a.type_arg);
+          },
+        }
+      );
+
+      this.pph.stocks.hand.addCards(gamedatas.hand, {}, { visible: true });
 
       // Setup game notifications to handle (see "setupNotifications" method below)
       this.setupNotifications();

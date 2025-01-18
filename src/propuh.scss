@@ -76,9 +76,9 @@ html {
     width: var(--locationWidth);
   }
 
-  .pph_door {
+  .pph_table {
     grid-area: g;
-    background-image: url("img/door.jpg");
+    background-image: url("img/table.jpg");
   }
 
   .pph_bed {
@@ -87,6 +87,6 @@ html {
   }
 }
 
-.pph_hands {
-  width: 100%;
+.pph_hand {
+  margin-bottom: 40px;
 }
