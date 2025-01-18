@@ -12,10 +12,11 @@
  * propuh stylesheet
  *
  */
+@use "bga-zoom";
 
 html {
-  --cardWidth: 200px;
-  --cardHeight: 279.4px;
+  --cardWidth: 150px;
+  --cardHeight: 209.6;
   --locationWidth: 386.9px;
   --locationHeight: 240px;
   --houseHeight: 581.2px;
@@ -32,13 +33,12 @@ html {
 
 .pph_boards {
   display: grid;
-  grid-template-areas: ". f ." "g e h";
+  grid-template-areas: "c f ." "g e h";
   align-items: center;
   justify-content: center;
   gap: 8px;
 
   .pph_deck {
-    display: none;
     grid-area: c;
     height: var(--cardHeight);
     width: var(--cardWidth);
