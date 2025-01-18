@@ -21,6 +21,7 @@ define([
   "ebg/core/gamegui",
   "ebg/counter",
   `${g_gamethemeurl}modules/js/bga-zoom.js`,
+  `${g_gamethemeurl}modules/js/bga-cards.js`,
 ], function (dojo, declare) {
   return declare("bgagame.propuh", ebg.core.gamegui, {
     constructor: function () {
@@ -34,6 +35,7 @@ define([
         managers: {},
         info: {},
         globals: {},
+        stocks: {},
       };
 
       this.pph.managers.zoom = new ZoomManager({
@@ -46,6 +48,28 @@ define([
         smooth: true,
         onZoomChange: (zoom) => {},
       });
+
+      this.pph.managers.trick = new CardManager(this, {
+        cardHeight: 209.6,
+        cardWidth: 150,
+        getId: (card) => `trick-${card.id}`,
+        setupDiv: (card, element) => {
+          element.classList.add("pph_trickCard");
+        },
+        setupFrontDiv: (card, element) => {},
+        setupBackDiv: (card, element) => {},
+      });
+
+      this.pph.stocks.trick = new Deck(
+        this.pph.managers.trick,
+        document.getElementById("pph_deck"),
+        {
+          cardNumber: 28,
+          counter: { position: "center", extraClasses: "text-shadow pph_deckCounter" },
+        }
+      );
+
+      this.pph.stocks.trick;
 
       // Setup game notifications to handle (see "setupNotifications" method below)
       this.setupNotifications();
