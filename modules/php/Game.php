@@ -166,7 +166,7 @@ class Game extends \Table
         // Get information about players.
         // NOTE: you can retrieve some extra field you added for "player" table in `dbmodel.sql` if you need it.
         $result["players"] = $this->getCollectionFromDb(
-            "SELECT `player_id` `id`, `player_score` `score` FROM `player`"
+            "SELECT player_id id, player_score score, player_role role FROM player"
         );
         $result["hand"] = $this->getHand($current_player_id, false);
 
@@ -191,21 +191,26 @@ class Game extends \Table
     {
         $gameinfos = $this->getGameinfos();
         $default_colors = $gameinfos['player_colors'];
+        shuffle($default_colors);
 
         foreach ($players as $player_id => $player) {
+            $color = array_shift($default_colors);
+            $playerRole = $color === "ff0000" ? "propuh" : "granny";
+
             // Now you can access both $player_id and $player array
-            $query_values[] = vsprintf("('%s', '%s', '%s', '%s', '%s')", [
+            $query_values[] = vsprintf("('%s', '%s', '%s', '%s', '%s', '%s')", [
                 $player_id,
-                array_shift($default_colors),
+                $color,
                 $player["player_canal"],
                 addslashes($player["player_name"]),
                 addslashes($player["player_avatar"]),
+                $playerRole,
             ]);
         }
 
         $this->DbQuery(
             sprintf(
-                "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES %s",
+                "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar, player_role) VALUES %s",
                 implode(",", $query_values)
             )
         );

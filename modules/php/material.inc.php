@@ -61,17 +61,17 @@ $this->CARDS = [
         "count" => 1,
         "value" => 1,
     ],
-    9 => [
+    10 => [
         "suit" => 3,
         "count" => 4,
         "value" => 2,
     ],
-    9 => [
+    11 => [
         "suit" => 3,
         "count" => 4,
         "value" => 3,
     ],
-    9 => [
+    12 => [
         "suit" => 3,
         "count" => 2,
         "value" => 4,

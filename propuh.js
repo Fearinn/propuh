@@ -96,14 +96,16 @@ define([
       );
 
       for (const player_id in gamedatas.players) {
+        const playerPanel = this.getPlayerPanelElement(player_id);
+        playerPanel.classList.add("pph_playerPanel");
+        const playerRole = gamedatas.players[player_id].role;
+
+        playerPanel.insertAdjacentHTML("beforeend", `<div id="pph_panelToken-${player_id}" class="pph_token" data-role=${playerRole}></div>`);
+
         if (player_id == this.player_id) {
           continue;
         }
-
-        const playerPanel = this.getPlayerPanelElement(player_id);
-        playerPanel.classList.add("pph_playerPanel");
-
-        playerPanel.insertAdjacentHTML("beforeend", `<div id="pph_panelToken-${player_id}" class="pph_token"></div>`);
+        
         playerPanel.insertAdjacentHTML(
           "beforeend",
           `<div id="pph_voidHand-${player_id}" class="pph_voidHand"></div>`

@@ -21,6 +21,8 @@ html {
   --locationWidth: 386.9px;
   --locationHeight: 240px;
   --houseHeight: 581.2px;
+  --tokenHeight: 40px;
+  --tokenWidth: 40px;
 }
 
 .pph_gameArea {
@@ -87,14 +89,31 @@ html {
   }
 }
 
-.pph_hand {
-  margin-bottom: 40px;
-}
-
 .pph_playerPanel {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+
   .pph_voidHand {
     position: absolute;
     height: var(--cardHeight);
     width: var(--cardWidth);
   }
+}
+
+.pph_token {
+  background-size: 100% 100%;
+  height: var(--tokenHeight);
+  width: var(--tokenWidth);
+
+  &[data-role="granny"] {
+    background-image: url("img/grannyToken.png");
+  }
+  &[data-role="propuh"] {
+    background-image: url("img/propuhToken.png");
+  }
+}
+
+.pph_hand {
+  margin-bottom: 40px;
 }
