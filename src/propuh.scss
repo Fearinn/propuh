@@ -90,3 +90,11 @@ html {
 .pph_hand {
   margin-bottom: 40px;
 }
+
+.pph_playerPanel {
+  .pph_voidHand {
+    position: absolute;
+    height: var(--cardHeight);
+    width: var(--cardWidth);
+  }
+}

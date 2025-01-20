@@ -35,7 +35,9 @@ define([
         managers: {},
         info: {},
         globals: {},
-        stocks: {},
+        stocks: {
+          trick: {},
+        },
       };
 
       this.pph.managers.zoom = new ZoomManager({
@@ -77,9 +79,7 @@ define([
         }
       );
 
-      console.log(gamedatas.hand);
-
-      this.pph.stocks.hand = new HandStock(
+      this.pph.stocks.trick.hand = new HandStock(
         this.pph.managers.trick,
         document.getElementById("pph_hand"),
         {
@@ -89,8 +89,31 @@ define([
         }
       );
 
-      this.pph.stocks.hand.addCards(gamedatas.hand, {}, { visible: true });
+      this.pph.stocks.trick.hand.addCards(
+        gamedatas.hand,
+        {},
+        { visible: true }
+      );
 
+      for (const player_id in gamedatas.players) {
+        if (player_id == this.player_id) {
+          continue;
+        }
+
+        const playerPanel = this.getPlayerPanelElement(player_id);
+        playerPanel.classList.add("pph_playerPanel");
+
+        playerPanel.insertAdjacentHTML("beforeend", `<div id="pph_panelToken-${player_id}" class="pph_token"></div>`);
+        playerPanel.insertAdjacentHTML(
+          "beforeend",
+          `<div id="pph_voidHand-${player_id}" class="pph_voidHand"></div>`
+        );
+        this.pph.stocks.trick.hand = new VoidStock(
+          this.pph.managers.trick,
+          document.getElementById(`pph_voidHand-${player_id}`),
+          {}
+        );
+      }
       // Setup game notifications to handle (see "setupNotifications" method below)
       this.setupNotifications();
 

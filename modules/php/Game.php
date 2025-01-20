@@ -168,7 +168,6 @@ class Game extends \Table
         $result["players"] = $this->getCollectionFromDb(
             "SELECT `player_id` `id`, `player_score` `score` FROM `player`"
         );
-
         $result["hand"] = $this->getHand($current_player_id, false);
 
         return $result;
