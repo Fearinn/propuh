@@ -54,6 +54,7 @@ define([
       this.pph.managers.trick = new CardManager(this, {
         cardHeight: 209.6,
         cardWidth: 150,
+        selectedCardClass: "pph_card-selected",
         getId: (card) => `trick-${card.id}`,
         setupDiv: (card, element) => {
           element.classList.add("pph_trickCard");
@@ -89,6 +90,20 @@ define([
         }
       );
 
+      this.pph.stocks.trick.hand.onSelectionChange = (
+        selection,
+        lastChange
+      ) => {
+        this.statusBar.removeActionButtons();
+
+        if (selection.length === 1) {
+          this.statusBar.addActionButton(_("Confirm card"), () => {
+            this.onConfirmCard(lastChange);
+          });
+          return;
+        }
+      };
+
       this.pph.stocks.trick.hand.addCards(
         gamedatas.hand,
         {},
@@ -100,17 +115,20 @@ define([
         playerPanel.classList.add("pph_playerPanel");
         const playerRole = gamedatas.players[player_id].role;
 
-        playerPanel.insertAdjacentHTML("beforeend", `<div id="pph_panelToken-${player_id}" class="pph_token" data-role=${playerRole}></div>`);
+        playerPanel.insertAdjacentHTML(
+          "beforeend",
+          `<div id="pph_panelToken-${player_id}" class="pph_token" data-role=${playerRole}></div>`
+        );
 
         if (player_id == this.player_id) {
           continue;
         }
-        
+
         playerPanel.insertAdjacentHTML(
           "beforeend",
           `<div id="pph_voidHand-${player_id}" class="pph_voidHand"></div>`
         );
-        this.pph.stocks.trick.hand = new VoidStock(
+        this.pph.stocks.trick.void = new VoidStock(
           this.pph.managers.trick,
           document.getElementById(`pph_voidHand-${player_id}`),
           {}
@@ -131,9 +149,37 @@ define([
     onEnteringState: function (stateName, args) {
       console.log("Entering state: " + stateName, args);
 
-      switch (stateName) {
-        case "dummy":
-          break;
+      if (stateName === "playerTurn") {
+        this.pph.stocks.trick.hand.setSelectionMode("single");
+      }
+
+      if (stateName === "client_pickLocation") {
+        this.statusBar.setTitle("${you} must select a location");
+        this.statusBar.addActionButton(_("Select other card"), () => {
+          this.restoreServerGameState();
+        }, {
+          color: "secondary",
+        });
+
+        const card = args.client_args.card;
+
+        this.pph.stocks.trick.hand
+          .getCardElement(card)
+          .classList.add("pph_card-selected");
+
+        const boardElements = document.querySelectorAll("[data-board]");
+        boardElements.forEach((boardElement) => {
+          boardElement.classList.add("pph_board-selectable");
+          boardElement.onclick = () => {
+            boardElement.classList.toggle("pph_board-selected");
+
+            boardElements.forEach((element) => {
+              if (element.id !== boardElement.id) {
+                element.classList.remove("pph_board-selected");
+              }
+            });
+          };
+        });
       }
     },
 
@@ -143,9 +189,8 @@ define([
     onLeavingState: function (stateName) {
       console.log("Leaving state: " + stateName);
 
-      switch (stateName) {
-        case "dummy":
-          break;
+      if (stateName === "playerTurn") {
+        this.pph.stocks.trick.hand.setSelectionMode("none");
       }
     },
 
@@ -159,11 +204,23 @@ define([
     ///////////////////////////////////////////////////
     //// Utility methods
 
+    onConfirmCard: function (card) {
+      this.setClientState("client_pickLocation", {
+        client_args: {
+          card,
+        },
+      });
+    },
+
     ///////////////////////////////////////////////////
     //// Player's action
 
-    onCardClick: function (card_id) {
-      console.log("onCardClick", card_id);
+    performAction: function (action, args = {}) {
+      this.bgaPerformAction(action, args);
+    },
+
+    actPlayCard: function (card, location) {
+      this.performAction("actPlayCard", { card, location });
     },
 
     ///////////////////////////////////////////////////
