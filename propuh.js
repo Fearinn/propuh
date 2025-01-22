@@ -61,7 +61,7 @@ define([
         },
         setupFrontDiv: (card, element) => {
           card.type_arg = Number(card.type_arg);
-          const backgroundPosition = `${card.type_arg * 100}% 0`;
+          const backgroundPosition = `-${card.type_arg * 100}% 0`;
           element.parentElement.parentElement.style.backgroundPosition =
             backgroundPosition;
         },
@@ -85,7 +85,7 @@ define([
         document.getElementById("pph_hand"),
         {
           sort: (a, b) => {
-            return Number(b.type_arg) - Number(a.type_arg);
+            return Number(a.type_arg) - Number(b.type_arg);
           },
         }
       );
@@ -149,37 +149,31 @@ define([
     onEnteringState: function (stateName, args) {
       console.log("Entering state: " + stateName, args);
 
-      if (stateName === "playerTurn") {
-        this.pph.stocks.trick.hand.setSelectionMode("single");
-      }
+      if (this.isCurrentPlayerActive()) {
+        if (stateName === "playerTurn") {
+          this.pph.stocks.trick.hand.setSelectionMode("single");
+        }
 
-      if (stateName === "client_pickLocation") {
-        this.statusBar.setTitle("${you} must select a location");
-        this.statusBar.addActionButton(_("Select other card"), () => {
-          this.restoreServerGameState();
-        }, {
-          color: "secondary",
-        });
+        if (stateName === "client_pickLocation") {
+          this.statusBar.setTitle("${you} must select a location");
+          this.statusBar.addActionButton(
+            _("Select other card"),
+            () => {
+              this.restoreServerGameState();
+            },
+            {
+              color: "secondary",
+            }
+          );
 
-        const card = args.client_args.card;
+          const card = args.client_args.card;
 
-        this.pph.stocks.trick.hand
-          .getCardElement(card)
-          .classList.add("pph_card-selected");
+          this.pph.stocks.trick.hand
+            .getCardElement(card)
+            .classList.add("pph_card-selected");
 
-        const boardElements = document.querySelectorAll("[data-board]");
-        boardElements.forEach((boardElement) => {
-          boardElement.classList.add("pph_board-selectable");
-          boardElement.onclick = () => {
-            boardElement.classList.toggle("pph_board-selected");
-
-            boardElements.forEach((element) => {
-              if (element.id !== boardElement.id) {
-                element.classList.remove("pph_board-selected");
-              }
-            });
-          };
-        });
+          this.setBoardsSelectable(card);
+        }
       }
     },
 
@@ -191,6 +185,10 @@ define([
 
       if (stateName === "playerTurn") {
         this.pph.stocks.trick.hand.setSelectionMode("none");
+      }
+
+      if (stateName === "client_pickLocation") {
+        this.unsetBoardsSelectable();
       }
     },
 
@@ -204,11 +202,48 @@ define([
     ///////////////////////////////////////////////////
     //// Utility methods
 
-    onConfirmCard: function (card) {
-      this.setClientState("client_pickLocation", {
-        client_args: {
-          card,
-        },
+    setBoardsSelectable: function (card) {
+      const selectedClass = "pph_board-selected";
+      const boardElements = document.querySelectorAll("[data-board]");
+
+      boardElements.forEach((boardElement) => {
+        boardElement.classList.add("pph_board-selectable");
+
+        boardElement.onclick = () => {
+          const buttonId = "pph_confirmLocation_btn";
+          document.getElementById(buttonId)?.remove();
+
+          boardElement.classList.toggle(selectedClass);
+
+          boardElements.forEach((element) => {
+            if (element.id !== boardElement.id) {
+              element.classList.remove(selectedClass);
+            }
+          });
+
+          if (boardElement.classList.contains(selectedClass)) {
+            this.statusBar.addActionButton(
+              _("Confirm location"),
+              () => {
+                const location_id = boardElement.dataset.board;
+                this.actPlayCard(card.id, location_id);
+              },
+              {
+                id: buttonId,
+              }
+            );
+          }
+        };
+      });
+    },
+
+    unsetBoardsSelectable: function () {
+      const selectedClass = "pph_board-selected";
+      const boardElements = document.querySelectorAll("[data-board]");
+
+      boardElements.forEach((boardElement) => {
+        boardElement.classList.remove(selectedClass);
+        boardElement.onClick = undefined;
       });
     },
 
@@ -219,8 +254,16 @@ define([
       this.bgaPerformAction(action, args);
     },
 
-    actPlayCard: function (card, location) {
-      this.performAction("actPlayCard", { card, location });
+    onConfirmCard: function (card) {
+      this.setClientState("client_pickLocation", {
+        client_args: {
+          card,
+        },
+      });
+    },
+
+    actPlayCard: function (card_id, location_id) {
+      this.performAction("actPlayCard", { card_id, location_id });
     },
 
     ///////////////////////////////////////////////////

@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace Bga\Games\propuh;
 
-use Deck;
+use Bga\GameFramework\Actions\Types\IntParam;
 
 require_once(APP_GAMEMODULE_PATH . "module/table/table.game.php");
 
@@ -62,7 +62,31 @@ class Game extends \Table
      *
      * @throws BgaUserException
      */
-    public function actPlayCard(int $card_id): void {}
+    public function actPlayCard(#[IntParam(min: 1, max: 28)] int $card_id, #[IntParam(min: 1, max: 3)] int $location_id): void
+    {
+        $player_id = (int) $this->getActivePlayerId();
+        $location_name = $this->LOCATIONS[$location_id]["name"];
+        $location_label = $this->LOCATIONS[$location_id]["label"];
+        $this->cards->moveCard($card_id, $location_name, $player_id);
+
+        $card = $this->cards->getCard($card_id);
+
+        $trick_id = (int) $card["type_arg"];
+
+        $value = $this->CARDS[$trick_id]["value"];
+        $suit_id = $this->CARDS[$trick_id]["suit"];
+        $suit_label = $this->LOCATIONS[$suit_id]["label"];
+        
+        $this->notify->all("playCard", clienttranslate('${player_name} plays a ${value} of ${suit_label} in the ${location_label}'), [
+            "player_id" => $player_id,
+            "player_name" => $this->getPlayerNameById($player_id),
+            "card" => $card,
+            "value" => $value,
+            "suit_label" => $suit_label,
+            "location_label" => $location_label,
+            "i18n" => ["suit_label", "location_label"],
+        ]);
+    }
 
     /**
      * Game state arguments, example content.
