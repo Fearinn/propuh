@@ -54,7 +54,7 @@ class CardManager
             clienttranslate('${player_name} plays a ${value} of ${suit_label} in the ${location_label}'),
             [
                 "player_id" => $player_id,
-                "card" => $this->card,
+                "card" => $this->getCard(),
                 "value" => $this->value,
                 "suit_label" => $this->suit_label,
                 "location_label" => $location_label,

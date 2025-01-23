@@ -53,7 +53,7 @@ class Game extends \Table
         return $args;
     }
 
-    public function getHand($player_id, $associative = true)
+    public function getHand($player_id, $associative = true): array
     {
         $hand = $this->cards->getPlayerHand($player_id);
 
@@ -62,6 +62,13 @@ class Game extends \Table
         }
 
         return $hand;
+    }
+
+    public function getPlayedCards(?int $location_id): array {
+        $playedCards = $this->getCollectionFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg
+        FROM card WHERE card_location IN ('stove', 'bed', 'table')");
+
+        return array_values($playedCards);
     }
 
     /**
@@ -179,6 +186,7 @@ class Game extends \Table
             "SELECT player_id id, player_score score, player_role role FROM player"
         );
         $result["hand"] = $this->getHand($current_player_id, false);
+        $result["playedCards"] = $this->getPlayedCards(null);
 
         return $result;
     }

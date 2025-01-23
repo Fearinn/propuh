@@ -110,6 +110,28 @@ define([
         { visible: true }
       );
 
+      this.pph.stocks.trick.bed = new HandStock(
+        this.pph.managers.trick,
+        document.getElementById("pph_bed"),
+        {}
+      );
+
+      this.pph.stocks.trick.stove = new HandStock(
+        this.pph.managers.trick,
+        document.getElementById("pph_stove"),
+        {}
+      );
+
+      this.pph.stocks.trick.table = new HandStock(
+        this.pph.managers.trick,
+        document.getElementById("pph_table"),
+        {}
+      );
+
+      gamedatas.playedCards.forEach((card) => {
+        this.pph.stocks.trick[card.location].addCard(card);
+      });
+
       for (const player_id in gamedatas.players) {
         const playerPanel = this.getPlayerPanelElement(player_id);
         playerPanel.classList.add("pph_playerPanel");
@@ -188,7 +210,9 @@ define([
       }
 
       if (stateName === "client_pickLocation") {
-        document.querySelector(".pph_card-selected")?.classList.remove("pph_card-selected");
+        document
+          .querySelector(".pph_card-selected")
+          ?.classList.remove("pph_card-selected");
         this.unsetBoardsSelectable();
       }
     },
@@ -239,12 +263,12 @@ define([
     },
 
     unsetBoardsSelectable: function () {
-      const selectedClass = "pph_board-selected";
       const boardElements = document.querySelectorAll("[data-board]");
 
       boardElements.forEach((boardElement) => {
-        boardElement.classList.remove(selectedClass);
-        boardElement.onClick = undefined;
+        boardElement.classList.remove("pph_board-selectable");
+        boardElement.classList.remove("pph_board-selected");
+        boardElement.onclick = undefined;
       });
     },
 
@@ -270,7 +294,12 @@ define([
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
     setupNotifications: function () {
-      console.log("notifications subscriptions setup");
+      this.bgaSetupPromiseNotifications();
+    },
+
+    notif_playCard: async function (args) {
+      const card = args.card;
+      this.pph.stocks.trick[card.location].addCard(card);
     },
   });
 });
