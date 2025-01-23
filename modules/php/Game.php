@@ -39,9 +39,19 @@ class Game extends \Table
 
         $this->cards = $this->getNew("module.common.deck");
         $this->cards->init("card");
-    }
+
+        $this->notify->addDecorator(fn(string $message, array $args) => $this->decoratePlayerNameNotifArg($message, $args));
+}
+    
 
     /*  UTILITY FUNCTIONS */
+
+    public function decoratePlayerNameNotifArg(string $message, array $args): array {
+        if (isset($args["player_id"]) && !isset($args["player_name"]) && str_contains($message, '${player_name}')) {
+            $args["player_name"] = $this->getPlayerNameById($args["player_id"]);
+        }
+        return $args;
+    }
 
     public function getHand($player_id, $associative = true)
     {
@@ -65,27 +75,9 @@ class Game extends \Table
     public function actPlayCard(#[IntParam(min: 1, max: 28)] int $card_id, #[IntParam(min: 1, max: 3)] int $location_id): void
     {
         $player_id = (int) $this->getActivePlayerId();
-        $location_name = $this->LOCATIONS[$location_id]["name"];
-        $location_label = $this->LOCATIONS[$location_id]["label"];
-        $this->cards->moveCard($card_id, $location_name, $player_id);
-
-        $card = $this->cards->getCard($card_id);
-
-        $trick_id = (int) $card["type_arg"];
-
-        $value = $this->CARDS[$trick_id]["value"];
-        $suit_id = $this->CARDS[$trick_id]["suit"];
-        $suit_label = $this->LOCATIONS[$suit_id]["label"];
-        
-        $this->notify->all("playCard", clienttranslate('${player_name} plays a ${value} of ${suit_label} in the ${location_label}'), [
-            "player_id" => $player_id,
-            "player_name" => $this->getPlayerNameById($player_id),
-            "card" => $card,
-            "value" => $value,
-            "suit_label" => $suit_label,
-            "location_label" => $location_label,
-            "i18n" => ["suit_label", "location_label"],
-        ]);
+        $card = new CardManager($card_id, $this);
+        $card->play($location_id, $player_id);
+        $this->gamestate->nextState("nextPlayer");
     }
 
     /**
@@ -127,18 +119,12 @@ class Game extends \Table
      *
      * The action method of state `nextPlayer` is called everytime the current game state is set to `nextPlayer`.
      */
-    public function stNextPlayer(): void
+    public function stBetweenPlayers(): void
     {
-        // Retrieve the active player ID.
         $player_id = (int)$this->getActivePlayerId();
-
-        // Give some extra time to the active player when he completed an action
         $this->giveExtraTime($player_id);
 
         $this->activeNextPlayer();
-
-        // Go to another gamestate
-        // Here, we would detect if the game is over, and in this case use "endGame" transition instead 
         $this->gamestate->nextState("nextPlayer");
     }
 

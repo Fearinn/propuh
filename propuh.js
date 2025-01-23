@@ -188,6 +188,7 @@ define([
       }
 
       if (stateName === "client_pickLocation") {
+        document.querySelector(".pph_card-selected")?.classList.remove("pph_card-selected");
         this.unsetBoardsSelectable();
       }
     },

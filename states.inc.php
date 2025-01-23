@@ -14,6 +14,13 @@
  *
  */
 
+ // define contants for state ids
+if (!defined('ST_END_GAME')) { // ensure this block is only invoked once, since it is included multiple times
+   define("ST_PLAYER_TURN", 2);
+   define("ST_BETWEEN_PLAYERS", 3);
+   define("ST_END_GAME", 99);
+}
+
 $machinestates = [
 
     // The initial state. Please do not modify.
@@ -26,7 +33,7 @@ $machinestates = [
         "transitions" => ["" => 2]
     ),
 
-    2 => [
+    ST_PLAYER_TURN => [
         "name" => "playerTurn",
         "description" => clienttranslate('${actplayer} must play a card'),
         "descriptionmyturn" => clienttranslate('${you} must play a card'),
@@ -35,7 +42,16 @@ $machinestates = [
         "possibleactions" => [
             "actPlayCard", 
         ],
-        "transitions" => ["playerTurn" => 2],
+        "transitions" => ["nextPlayer" => ST_BETWEEN_PLAYERS],
+    ],
+
+    ST_BETWEEN_PLAYERS => [
+        "name" => "betweenPlayers",
+        "description" => clienttranslate('Passing turn...'),
+        "descriptionmyturn" => clienttranslate('Passing turn...'),
+        "type" => "game",
+        "action" => "stBetweenPlayers",
+        "transitions" => ["nextPlayer" => ST_PLAYER_TURN],
     ],
 
     // Final state.
