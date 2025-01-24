@@ -27,7 +27,6 @@ require_once(APP_GAMEMODULE_PATH . "module/table/table.game.php");
 class Game extends \Table
 {
     private array $CARDS;
-    private array $LOCATIONS;
 
     public function __construct()
     {
@@ -40,13 +39,17 @@ class Game extends \Table
         $this->cards = $this->getNew("module.common.deck");
         $this->cards->init("card");
 
+        $this->tokens = $this->getNew("module.common.deck");
+        $this->tokens->init("token");
+
         $this->notify->addDecorator(fn(string $message, array $args) => $this->decoratePlayerNameNotifArg($message, $args));
-}
-    
+    }
+
 
     /*  UTILITY FUNCTIONS */
 
-    public function decoratePlayerNameNotifArg(string $message, array $args): array {
+    public function decoratePlayerNameNotifArg(string $message, array $args): array
+    {
         if (isset($args["player_id"]) && !isset($args["player_name"]) && str_contains($message, '${player_name}')) {
             $args["player_name"] = $this->getPlayerNameById($args["player_id"]);
         }
@@ -64,7 +67,8 @@ class Game extends \Table
         return $hand;
     }
 
-    public function getPlayedCards(?int $location_id): array {
+    public function getPlayedCards(?int $location_id): array
+    {
         $playedCards = $this->getCollectionFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg
         FROM card WHERE card_location IN ('stove', 'bed', 'table')");
 
@@ -240,9 +244,15 @@ class Game extends \Table
         $this->cards->createCards($cards, "deck");
         $this->cards->shuffle("deck");
 
-
         foreach ($players as $player_id => $player) {
             $this->cards->pickCards(4, "deck", $player_id);
+
+            $playerRole = $this->getUniqueValueFromDB("SELECT player_role FROM player WHERE player_id=$player_id");
+            $this->tokens->createCards(
+                [["type_arg" => $player_id, "type" => $playerRole, "nbr" => 7]],
+                "hand",
+                $player_id
+            );
         }
 
         $this->reloadPlayersBasicInfos();

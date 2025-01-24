@@ -77,3 +77,16 @@ $this->CARDS = [
         "value" => 4,
     ],
 ];
+
+$this->ROLES = [
+    "propuh" => [
+        "label" => "Propuh",
+        "goals" => [],
+    ],
+    "granny" => [
+        "label" => clienttranslate("Granny"),
+        "goals" => [
+
+        ],
+    ]
+];

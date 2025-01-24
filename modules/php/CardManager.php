@@ -7,6 +7,12 @@ class CardManager
     private array $CARDS;
     private array $LOCATIONS;
 
+    protected $card_id;
+    protected $card;
+    protected $id;
+    protected $suit_id;
+    protected $suit_label;
+
     public function __construct(int $card_id, \Table $game)
     {
         require "material.inc.php";
