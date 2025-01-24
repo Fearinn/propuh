@@ -418,6 +418,14 @@ html {
   background-image: url("img/propuhToken.png");
 }
 
+.pph_discard {
+  position: absolute !important;
+  top: -99px;
+  left: -99px;
+  height: var(--cardHeight);
+  width: var(--cardWidth);
+}
+
 .pph_hand {
   margin-bottom: 40px;
 }

@@ -110,6 +110,12 @@ define([
         { visible: true }
       );
 
+      this.pph.stocks.trick.discard = new VoidStock(
+        this.pph.managers.trick,
+        document.getElementById("pph_discard"),
+        {}
+      );
+
       this.pph.stocks.trick.bed = new HandStock(
         this.pph.managers.trick,
         document.getElementById("pph_bedCards"),
@@ -300,6 +306,11 @@ define([
     notif_playCard: async function (args) {
       const card = args.card;
       this.pph.stocks.trick[card.location].addCard(card);
+    },
+
+    notif_discardCard: async function (args) {
+      const card = args.card;
+      this.pph.stocks.trick.discard.addCard(card);
     },
   });
 });

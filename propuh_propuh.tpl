@@ -11,6 +11,7 @@
 -->
 
 <div id="pph_gameArea" class="pph_gameArea">
+    <div id="pph_discard" class="pph_discard"></div>
     <div id="pph_hand" class="pph_hand"></div>
     <div id="pph_boards" class="pph_boards">
         <div id="pph_deck" class="pph_deck"></div>

@@ -12,6 +12,7 @@ class CardManager
     protected $id;
     protected $suit_id;
     protected $suit_label;
+    public $player_id;
 
     public function __construct(int $card_id, \Table $game)
     {
@@ -22,6 +23,7 @@ class CardManager
 
         $card = $this->game->cards->getCard($card_id);
         $this->card = $card;
+        $this->player_id = (int) $card["location_arg"];
 
         $trick_id = (int) $card["type_arg"];
         $trick = $this->CARDS[$trick_id];
@@ -65,6 +67,19 @@ class CardManager
                 "suit_label" => $this->suit_label,
                 "location_label" => $location_label,
                 "i18n" => ["suit_label", "location_label"],
+            ]
+        );
+    }
+
+    public function discard(): void
+    {
+        $this->game->cards->moveCard($this->card_id, "discard");
+
+        $this->game->notify->all(
+            "discardCard",
+            "",
+            [
+                "card" => $this->card,
             ]
         );
     }

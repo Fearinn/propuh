@@ -21,12 +21,18 @@ declare(strict_types=1);
 namespace Bga\Games\propuh;
 
 use Bga\GameFramework\Actions\Types\IntParam;
+use Bga\Games\Propuh\CardManager;
+use Bga\Games\Propuh\TokenManager;
 
 require_once(APP_GAMEMODULE_PATH . "module/table/table.game.php");
+
+const GRANNY = "granny";
+const PROPUH = "propuh";
 
 class Game extends \Table
 {
     private array $CARDS;
+    private array $LOCATIONS;
 
     public function __construct()
     {
@@ -75,6 +81,38 @@ class Game extends \Table
         return array_values($playedCards);
     }
 
+    public function playerRole(int $player_id): string
+    {
+        return $this->getUniqueValueFromDB("SELECT player_role FROM player WHERE player_id=$player_id");
+    }
+
+    public function computeLocation(int $location_id): void {
+        $location_name = $this->LOCATIONS[$location_id]["name"];
+        $cards = $this->cards->getCardsInLocation($location_name);
+
+        if (!$cards) {
+            return;
+        }
+
+        if (count($cards) === 1) {
+            $k_cards = array_keys($cards);
+            $card_id = reset($k_cards);
+            $card = new CardManager($card_id, $this);
+            $card->discard();
+
+            $player_id = $card->player_id;
+            $this->placeToken($location_id, $player_id);
+        }
+    }
+
+    public function placeToken(int $location_id, int $player_id) {
+        $k_hand = array_keys($this->tokens->getPlayerHand($player_id));
+        $tokenCard_id = reset($k_hand);
+
+        $token = new TokenManager($tokenCard_id, $this);
+        $token->place($location_id, $player_id);
+    }
+
     /**
      * Player action, example content.
      *
@@ -99,7 +137,7 @@ class Game extends \Table
      * @return array
      * @see ./states.inc.php
      */
-    public function argPlayerTurn(): array
+    public function arg_playerTurn(): array
     {
         // Get some values from the current game situation from the database.
 
@@ -130,13 +168,27 @@ class Game extends \Table
      *
      * The action method of state `nextPlayer` is called everytime the current game state is set to `nextPlayer`.
      */
-    public function stBetweenPlayers(): void
+    public function st_betweenPlayers(): void
     {
         $player_id = (int)$this->getActivePlayerId();
         $this->giveExtraTime($player_id);
 
         $this->activeNextPlayer();
+
+        if ($this->playerRole($player_id) === PROPUH) {
+            $this->gamestate->nextState("nextTrick");
+            return;
+        }
+
         $this->gamestate->nextState("nextPlayer");
+    }
+
+    public function st_betweenTricks(): void {
+        foreach ($this->LOCATIONS as $location_id => $location) {
+            $this->computeLocation($location_id);
+        }
+
+        $this->gamestate->nextState("nextTrick");
     }
 
     /**
@@ -217,7 +269,7 @@ class Game extends \Table
 
         foreach ($players as $player_id => $player) {
             $color = array_shift($default_colors);
-            $playerRole = $color === "ff0000" ? "propuh" : "granny";
+            $player_role = $color === "ff0000" ? PROPUH : GRANNY;
 
             // Now you can access both $player_id and $player array
             $query_values[] = vsprintf("('%s', '%s', '%s', '%s', '%s', '%s')", [
@@ -226,7 +278,7 @@ class Game extends \Table
                 $player["player_canal"],
                 addslashes($player["player_name"]),
                 addslashes($player["player_avatar"]),
-                $playerRole,
+                $player_role,
             ]);
         }
 
@@ -247,16 +299,18 @@ class Game extends \Table
         foreach ($players as $player_id => $player) {
             $this->cards->pickCards(4, "deck", $player_id);
 
-            $playerRole = $this->getUniqueValueFromDB("SELECT player_role FROM player WHERE player_id=$player_id");
+            $player_role = $this->playerRole($player_id);
             $this->tokens->createCards(
-                [["type_arg" => $player_id, "type" => $playerRole, "nbr" => 7]],
+                [["type_arg" => $player_id, "type" => $player_role, "nbr" => 7]],
                 "hand",
                 $player_id
             );
         }
 
         $this->reloadPlayersBasicInfos();
-        $this->activeNextPlayer();
+
+        $granny = $this->getUniqueValueFromDB("SELECT player_id FROM player WHERE player_role='granny'");
+        $this->gamestate->changeActivePlayer($granny);
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *------
  * BGA framework: Gregory Isabelli & Emmanuel Colin & BoardGameArena
@@ -14,11 +15,12 @@
  *
  */
 
- // define contants for state ids
+// define contants for state ids
 if (!defined('ST_END_GAME')) { // ensure this block is only invoked once, since it is included multiple times
-   define("ST_PLAYER_TURN", 2);
-   define("ST_BETWEEN_PLAYERS", 3);
-   define("ST_END_GAME", 99);
+    define("ST_PLAYER_TURN", 2);
+    define("ST_BETWEEN_PLAYERS", 3);
+    define("ST_BETWEEN_TRICKS", 4);
+    define("ST_END_GAME", 99);
 }
 
 $machinestates = [
@@ -38,25 +40,37 @@ $machinestates = [
         "description" => clienttranslate('${actplayer} must play a card'),
         "descriptionmyturn" => clienttranslate('${you} must play a card'),
         "type" => "activeplayer",
-        "args" => "argPlayerTurn",
+        "args" => "arg_playerTurn",
         "possibleactions" => [
-            "actPlayCard", 
+            "actPlayCard",
         ],
         "transitions" => ["nextPlayer" => ST_BETWEEN_PLAYERS],
     ],
 
     ST_BETWEEN_PLAYERS => [
         "name" => "betweenPlayers",
+        "description" => clienttranslate(""),
+        "descriptionmyturn" => clienttranslate(""),
+        "type" => "game",
+        "action" => "st_betweenPlayers",
+        "transitions" => [
+            "nextPlayer" => ST_PLAYER_TURN,
+            "nextTrick" => ST_BETWEEN_TRICKS
+        ],
+    ],
+
+    ST_BETWEEN_TRICKS => [
+        "name" => "betweenTricks",
         "description" => clienttranslate('Passing turn...'),
         "descriptionmyturn" => clienttranslate('Passing turn...'),
         "type" => "game",
-        "action" => "stBetweenPlayers",
-        "transitions" => ["nextPlayer" => ST_PLAYER_TURN],
+        "action" => "st_betweenTricks",
+        "transitions" => ["nextTrick" => ST_PLAYER_TURN],
     ],
 
     // Final state.
     // Please do not modify (and do not overload action/args methods).
-    99 => [
+    ST_END_GAME => [
         "name" => "gameEnd",
         "description" => clienttranslate("End of game"),
         "type" => "manager",
@@ -65,6 +79,3 @@ $machinestates = [
     ],
 
 ];
-
-
-
