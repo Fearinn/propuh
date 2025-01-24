@@ -367,6 +367,10 @@ html {
 .pph_boards .pph_board-selected {
   border: 4px solid blue;
 }
+.pph_boards .pph_boardCards {
+  position: relative;
+  top: 20%;
+}
 .pph_boards .pph_house {
   grid-area: e;
   background-image: url("img/house.jpg");
@@ -378,6 +382,9 @@ html {
   background-image: url("img/stove.jpg");
   height: var(--locationHeight);
   width: var(--locationWidth);
+}
+.pph_boards .pph_stove .pph_boardCards {
+  top: 5%;
 }
 .pph_boards .pph_table {
   grid-area: g;

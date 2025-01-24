@@ -15,9 +15,15 @@
     <div id="pph_boards" class="pph_boards">
         <div id="pph_deck" class="pph_deck"></div>
         <div id="pph_house" class="pph_house pph_board"></div>
-        <div id="pph_bed" class="pph_bed pph_board" data-board="1"></div>
-        <div id="pph_stove" class="pph_stove pph_board" data-board="2"></div>
-        <div id="pph_table" class="pph_table pph_board" data-board="3"></div>
+        <div id="pph_bed" class="pph_bed pph_board" data-board="1">
+            <div id="pph_bedCards" class="pph_boardCards"></div>
+        </div>
+        <div id="pph_stove" class="pph_stove pph_board" data-board="2">
+            <div id="pph_stoveCards" class="pph_boardCards"></div>
+        </div>
+        <div id="pph_table" class="pph_table pph_board" data-board="3">
+            <div id="pph_tableCards" class="pph_boardCards"></div>
+        </div>
     </div>
 </div>
 

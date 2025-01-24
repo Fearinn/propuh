@@ -70,6 +70,11 @@ html {
     &-selected {
       border: 4px solid blue;
     }
+
+    &Cards {
+      position: relative;
+      top: 20%;
+    }
   }
 
   .pph_house {
@@ -84,6 +89,10 @@ html {
     background-image: url("img/stove.jpg");
     height: var(--locationHeight);
     width: var(--locationWidth);
+
+    .pph_boardCards {
+      top: 5%;
+    }
   }
 
   .pph_table {

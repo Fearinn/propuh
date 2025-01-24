@@ -112,19 +112,19 @@ define([
 
       this.pph.stocks.trick.bed = new HandStock(
         this.pph.managers.trick,
-        document.getElementById("pph_bed"),
+        document.getElementById("pph_bedCards"),
         {}
       );
 
       this.pph.stocks.trick.stove = new HandStock(
         this.pph.managers.trick,
-        document.getElementById("pph_stove"),
+        document.getElementById("pph_stoveCards"),
         {}
       );
 
       this.pph.stocks.trick.table = new HandStock(
         this.pph.managers.trick,
-        document.getElementById("pph_table"),
+        document.getElementById("pph_tableCards"),
         {}
       );
 
