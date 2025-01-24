@@ -28,6 +28,9 @@ require_once(APP_GAMEMODULE_PATH . "module/table/table.game.php");
 
 const GRANNY = "granny";
 const PROPUH = "propuh";
+const ATTACK_CARD = "attackCard";
+const RESOLVE_TRICK = "resolveTrick";
+const PLAY_COUNT = "playCount";
 
 class Game extends \Table
 {
@@ -76,7 +79,7 @@ class Game extends \Table
     public function getPlayedCards(?int $location_id): array
     {
         $playedCards = $this->getCollectionFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg
-        FROM card WHERE card_location IN ('stove', 'bed', 'table')");
+        FROM card WHERE card_location IN (1, 2, 3)");
 
         return array_values($playedCards);
     }
@@ -86,26 +89,44 @@ class Game extends \Table
         return $this->getUniqueValueFromDB("SELECT player_role FROM player WHERE player_id=$player_id");
     }
 
-    public function computeLocation(int $location_id): void {
-        $location_name = $this->LOCATIONS[$location_id]["name"];
-        $cards = $this->cards->getCardsInLocation($location_name);
+    // public function compareCards(array $cards, int $location_id,)
+    // {
+    //     uasort($cards, function ($card, $card_2) use ($location_id) {
+    //         $card_id = (int) $card["id"];
+    //         $card = new CardManager($card_id, $this);
 
-        if (!$cards) {
-            return;
-        }
+    //         $cardWeight = $card->value;
+    //         $suit_id = $card->suit_id;
 
-        if (count($cards) === 1) {
-            $k_cards = array_keys($cards);
-            $card_id = reset($k_cards);
-            $card = new CardManager($card_id, $this);
-            $card->discard();
+    //         if ($suit_id === $location_id) {
+    //             $cardWeight *= 10;
+    //         }
 
-            $player_id = $card->player_id;
-            $this->placeToken($location_id, $player_id);
-        }
-    }
+    //         $card_id = (int) $card_2["id"];
+    //         $card = new CardManager($card_id, $this);
 
-    public function placeToken(int $location_id, int $player_id) {
+    //         $cardWeight_2 = $card->value;
+    //         $suit_id = $card->suit_id;
+
+    //         if ($suit_id === $location_id) {
+    //             $cardWeight_2 += 10;
+    //         }
+
+    //         return $cardWeight_2 <=> $cardWeight;
+    //     });
+
+    //     foreach ($cards as $card_id => $card) {
+    //        $card = new CardManager($card_id, $this);
+    //        $card->discard(); 
+    //     }
+
+    //     $bestCard = reset($cards);
+    //     $player_id = (int) $bestCard["location_arg"];
+    //     $this->placeToken($location_id, $player_id);
+    // }
+
+    public function placeToken(int $location_id, int $player_id)
+    {
         $k_hand = array_keys($this->tokens->getPlayerHand($player_id));
         $tokenCard_id = reset($k_hand);
 
@@ -175,20 +196,35 @@ class Game extends \Table
 
         $this->activeNextPlayer();
 
-        if ($this->playerRole($player_id) === PROPUH) {
+        if ($this->globals->get(RESOLVE_TRICK)) {
             $this->gamestate->nextState("nextTrick");
             return;
+        }
+
+        if ($this->globals->get(ATTACK_CARD)) {
+            $this->globals->set(RESOLVE_TRICK, true);
         }
 
         $this->gamestate->nextState("nextPlayer");
     }
 
-    public function st_betweenTricks(): void {
-        foreach ($this->LOCATIONS as $location_id => $location) {
-            $this->computeLocation($location_id);
+    public function st_resolveTrick(): void
+    {
+        $card_id = $this->globals->get(ATTACK_CARD);
+        $card = new CardManager($card_id, $this);
+        $card->resolve();
+
+        if ($this->globals->get(PLAY_COUNT) === 4) {
+            $this->globals->set(PLAY_COUNT, 0);
+            $this->gamestate->nextState("nextRound");
+            return;
         }
 
         $this->gamestate->nextState("nextTrick");
+    }
+
+    public function st_betweenRounds(): void {
+        $this->gamestate->nextState("nextRound");
     }
 
     /**
@@ -306,6 +342,8 @@ class Game extends \Table
                 $player_id
             );
         }
+
+        $this->globals->set(PLAY_COUNT, 0);
 
         $this->reloadPlayersBasicInfos();
 

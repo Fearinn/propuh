@@ -2,17 +2,14 @@
 
 namespace Bga\Games\Propuh;
 
+use const Bga\Games\propuh\ATTACK_CARD;
+use const Bga\Games\propuh\PLAY_COUNT;
+use const Bga\Games\propuh\RESOLVE_TRICK;
+
 class CardManager
 {
     private array $CARDS;
     private array $LOCATIONS;
-
-    protected $card_id;
-    protected $card;
-    protected $id;
-    protected $suit_id;
-    protected $suit_label;
-    public $player_id;
 
     public function __construct(int $card_id, \Table $game)
     {
@@ -22,7 +19,6 @@ class CardManager
         $this->card_id = $card_id;
 
         $card = $this->game->cards->getCard($card_id);
-        $this->card = $card;
         $this->player_id = (int) $card["location_arg"];
 
         $trick_id = (int) $card["type_arg"];
@@ -32,6 +28,7 @@ class CardManager
         $this->value = (int) $trick["value"];
         $this->suit_id = (int) $trick["suit"];
         $this->suit_label = $this->LOCATIONS[$this->suit_id]["label"];
+        $this->location_id = (int) $card["location"];
     }
 
     public function getCard(): array
@@ -53,9 +50,9 @@ class CardManager
         $this->validateLocation($player_id);
 
         $location = $this->LOCATIONS[$location_id];
-        $location_name = $location["name"];
         $location_label = $location["label"];
-        $this->game->cards->moveCard($this->card_id, $location_name, $player_id);
+        $this->game->cards->moveCard($this->card_id, $location_id, $player_id);
+
 
         $this->game->notify->all(
             "playCard",
@@ -69,6 +66,54 @@ class CardManager
                 "i18n" => ["suit_label", "location_label"],
             ]
         );
+
+        if (!$this->game->globals->get(ATTACK_CARD)) {
+            $this->game->globals->set(ATTACK_CARD, $this->card_id);
+        }
+
+        $this->game->globals->inc(PLAY_COUNT, 1);
+    }
+
+    public function weight(): int
+    {
+        $weight = $this->value;
+
+        $location_id = (int) $this->getCard()["location"];
+
+        if ($this->suit_id === $location_id) {
+            $weight += 10;
+        }
+        return $weight;
+    }
+
+    public function location(): string | int
+    {
+        return $this->getCard()["location"];
+    }
+
+    public function resolve(): void
+    {
+        $location_id = (int) $this->location();
+
+        $otherCard_id = (int) $this->game->getUniqueValueFromDB("SELECT card_id FROM card WHERE card_location IN (1, 2, 3) AND card_id<>'$this->card_id'");
+        $otherCard = new CardManager($otherCard_id, $this->game);
+
+        if ((int) $otherCard->location() === $location_id) {
+            $this->game->globals->set(ATTACK_CARD, null);
+            $this->game->globals->set(RESOLVE_TRICK, false);
+            $this->discard();
+            $otherCard->discard();
+
+            if ($this->weight() >= $otherCard->weight()) {
+                $this->game->placeToken($location_id, $this->player_id);
+            }
+
+            return;
+        }
+
+        $this->discard();
+        $this->game->placeToken($location_id, $this->player_id);
+        $this->game->globals->set(ATTACK_CARD, $otherCard_id);
     }
 
     public function discard(): void
@@ -79,7 +124,7 @@ class CardManager
             "discardCard",
             "",
             [
-                "card" => $this->card,
+                "card" => $this->getCard(),
             ]
         );
     }

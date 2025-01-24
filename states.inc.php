@@ -19,7 +19,8 @@
 if (!defined('ST_END_GAME')) { // ensure this block is only invoked once, since it is included multiple times
     define("ST_PLAYER_TURN", 2);
     define("ST_BETWEEN_PLAYERS", 3);
-    define("ST_BETWEEN_TRICKS", 4);
+    define("ST_RESOLVE_TRICK", 4);
+    define("ST_BETWEEN_ROUNDS", 5);
     define("ST_END_GAME", 99);
 }
 
@@ -49,23 +50,32 @@ $machinestates = [
 
     ST_BETWEEN_PLAYERS => [
         "name" => "betweenPlayers",
-        "description" => clienttranslate(""),
-        "descriptionmyturn" => clienttranslate(""),
+        "description" => "",
+        "descriptionmyturn" => "",
         "type" => "game",
         "action" => "st_betweenPlayers",
         "transitions" => [
             "nextPlayer" => ST_PLAYER_TURN,
-            "nextTrick" => ST_BETWEEN_TRICKS
+            "nextTrick" => ST_RESOLVE_TRICK
         ],
     ],
 
-    ST_BETWEEN_TRICKS => [
-        "name" => "betweenTricks",
-        "description" => clienttranslate('Passing turn...'),
-        "descriptionmyturn" => clienttranslate('Passing turn...'),
+    ST_RESOLVE_TRICK => [
+        "name" => "resolveTrick",
+        "description" => clienttranslate("Resolving trick..."),
+        "descriptionmyturn" => clienttranslate("Resolving trick..."),
         "type" => "game",
-        "action" => "st_betweenTricks",
-        "transitions" => ["nextTrick" => ST_PLAYER_TURN],
+        "action" => "st_resolveTrick",
+        "transitions" => ["nextTrick" => ST_PLAYER_TURN, "nextRound" => ST_BETWEEN_ROUNDS],
+    ],
+
+    ST_BETWEEN_ROUNDS => [
+        "name" => "betweenRounds",
+        "description" => clienttranslate("Finishing round..."),
+        "descriptionmyturn" => clienttranslate("Finishing round..."),
+        "type" => "game",
+        "action" => "st_betweenRounds",
+        "transitions" => ["nextRound" => ST_PLAYER_TURN],
     ],
 
     // Final state.
