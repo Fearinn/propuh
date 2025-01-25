@@ -360,8 +360,15 @@ define([
     },
 
     notif_playCard: async function (args) {
+      const player_id = args.player_id;
       const card = args.card;
-      this.pph.stocks.trick[card.location].addCard(card);
+
+      this.pph.stocks.trick[card.location].addCard(card, {
+        fromElement:
+          player_id == this.player_id
+            ? document.getElementById(`pph_voidHand-${player_id}`)
+            : undefined,
+      });
     },
 
     notif_discardCard: async function (args) {
