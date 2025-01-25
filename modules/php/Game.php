@@ -93,6 +93,17 @@ class Game extends \Table
         return array_values($playedCards);
     }
 
+    public function hideCards(array $cards): array {
+        $hiddenCards = [];
+        foreach ($cards as $card_id => $card) {
+            $card["type"] = null;
+            $card["type_arg"] = null;
+            $hiddenCards[] = $card;
+        }
+
+        return $hiddenCards;
+    }
+
     public function getPlacedTokens(?int $location_id): array
     {
         $placedTokens = $this->getCollectionFromDB("SELECT $this->deckFields FROM token WHERE card_location IN (1, 2, 3)");
@@ -237,7 +248,6 @@ class Game extends \Table
                 $card->resolve(true);
             }
 
-            $this->globals->set(PLAY_COUNT, 0);
             $this->gamestate->nextState("nextRound");
             return;
         }
@@ -247,6 +257,39 @@ class Game extends \Table
 
     public function st_betweenRounds(): void
     {
+        $this->globals->set(ATTACK_CARD, null);
+        $this->globals->set(RESOLVE_TRICK, false);
+        $this->globals->set(PLAY_COUNT, 0);
+
+        $players = $this->loadPlayersBasicInfos();
+        $drawnCards = [];
+        foreach ($players as $player_id => $player) {
+            $cards = $this->cards->pickCards(2, "deck", $player_id);
+            $cards = array_values($cards);
+
+            $drawnCards[$player_id] = $this->hideCards($cards);
+
+            $this->notify->player(
+                $player_id,
+                "drawCards",
+                "",
+                [
+                    "player_id" => $player_id,
+                    "cards" => $cards
+                ]
+            );
+        }
+
+        $msg = !!$cards ? clienttranslate("New round: Each player draws 2 cards from the deck") : clienttranslate("New round: no cards in the deck");
+
+        $this->notify->all(
+            "newRound",
+            $msg,
+            [
+                "cards" => $drawnCards,
+            ]
+        );
+
         $this->gamestate->nextState("nextRound");
     }
 

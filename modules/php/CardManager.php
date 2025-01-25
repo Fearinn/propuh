@@ -53,7 +53,6 @@ class CardManager
         $location_label = $location["label"];
         $this->game->cards->moveCard($this->card_id, $location_id, $player_id);
 
-
         $this->game->notify->all(
             "playCard",
             clienttranslate('${player_name} (${role_label}) plays a ${value} of ${suit_label} in the ${location_label}'),

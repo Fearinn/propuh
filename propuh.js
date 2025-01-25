@@ -80,7 +80,7 @@ define([
         setupBackDiv: (card, element) => {},
       });
 
-      this.pph.stocks.deck = new Deck(
+      this.pph.stocks.trick.deck = new Deck(
         this.pph.managers.trick,
         document.getElementById("pph_deck"),
         {
@@ -195,6 +195,11 @@ define([
       });
 
       for (const player_id in gamedatas.players) {
+        this.pph.stocks[player_id] = {
+          trick: {},
+          tokens: {},
+        };
+
         const playerPanel = this.getPlayerPanelElement(player_id);
         playerPanel.classList.add("pph_playerPanel");
         const player_role = gamedatas.players[player_id].role;
@@ -204,15 +209,12 @@ define([
           `<div id="pph_panelToken-${player_id}" class="pph_token" data-role=${player_role}></div>`
         );
 
-        if (player_id == this.player_id) {
-          continue;
-        }
-
         playerPanel.insertAdjacentHTML(
           "beforeend",
           `<div id="pph_voidHand-${player_id}" class="pph_voidHand"></div>`
         );
-        this.pph.stocks.trick.void = new VoidStock(
+
+        this.pph.stocks[player_id].trick.void = new VoidStock(
           this.pph.managers.trick,
           document.getElementById(`pph_voidHand-${player_id}`),
           {}
@@ -374,6 +376,32 @@ define([
     notif_discardCard: async function (args) {
       const card = args.card;
       this.pph.stocks.trick.discard.addCard(card);
+    },
+
+    notif_drawCards: async function (args) {
+      const cards = args.cards;
+      this.pph.stocks.trick.hand.addCards(cards, {
+        fromStock: this.pph.stocks.trick.deck,
+      });
+    },
+
+    notif_newRound: async function (args) {
+      const drawnCards = args.cards;
+
+      for (const player_id in drawnCards) {
+        if (player_id == this.player_id) {
+          continue;
+        }
+
+        const cards = drawnCards[player_id];
+        this.pph.stocks[player_id].trick.void.addCards(
+          cards,
+          {
+            fromStock: this.pph.stocks.trick.deck,
+          },
+          { visible: false }
+        );
+      }
     },
 
     notif_placeToken: async function (args) {
