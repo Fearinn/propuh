@@ -71,6 +71,7 @@ class CardManager
             $this->game->globals->set(ATTACK_CARD, $this->card_id);
         }
 
+
         $this->game->globals->inc(PLAY_COUNT, 1);
     }
 
@@ -91,9 +92,15 @@ class CardManager
         return $this->getCard()["location"];
     }
 
-    public function resolve(): void
+    public function resolve($lastCard = false): void
     {
         $location_id = (int) $this->location();
+
+        if ($lastCard) {
+            $this->discard();
+            $this->game->placeToken($location_id, $this->player_id);
+            return;
+        }
 
         $otherCard_id = (int) $this->game->getUniqueValueFromDB("SELECT card_id FROM card WHERE card_location IN (1, 2, 3) AND card_id<>'$this->card_id'");
         $otherCard = new CardManager($otherCard_id, $this->game);

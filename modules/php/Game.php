@@ -215,6 +215,13 @@ class Game extends \Table
         $card->resolve();
 
         if ($this->globals->get(PLAY_COUNT) === 4) {
+            $card_id = $this->globals->get(ATTACK_CARD);
+
+            if ($card_id) {
+                $card = new CardManager($card_id, $this);
+                $card->resolve(true);
+            }
+
             $this->globals->set(PLAY_COUNT, 0);
             $this->gamestate->nextState("nextRound");
             return;
@@ -223,7 +230,8 @@ class Game extends \Table
         $this->gamestate->nextState("nextTrick");
     }
 
-    public function st_betweenRounds(): void {
+    public function st_betweenRounds(): void
+    {
         $this->gamestate->nextState("nextRound");
     }
 
