@@ -35,7 +35,8 @@ const PLAY_COUNT = "playCount";
 class Game extends \Table
 {
     private array $CARDS;
-    private array $LOCATIONS;
+    private array $ROLES;
+    public string $deckFields = "card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg";
 
     public function __construct()
     {
@@ -59,8 +60,16 @@ class Game extends \Table
 
     public function decoratePlayerNameNotifArg(string $message, array $args): array
     {
-        if (isset($args["player_id"]) && !isset($args["player_name"]) && str_contains($message, '${player_name}')) {
-            $args["player_name"] = $this->getPlayerNameById($args["player_id"]);
+        if (isset($args["player_id"])) {
+            $player_id = (int) $args["player_id"];
+            if (!isset($args["player_name"]) && str_contains($message, '${player_name}')) {
+                $args["player_name"] = $this->getPlayerNameById($player_id);
+            }
+
+            if (!isset($args["role_label"]) && str_contains($message, '${role_label}')) {
+                $player_role = $this->playerRole($player_id);
+                $args["role_label"] = $this->ROLES[$player_role]["label"];
+            }
         }
         return $args;
     }
@@ -82,6 +91,12 @@ class Game extends \Table
         FROM card WHERE card_location IN (1, 2, 3)");
 
         return array_values($playedCards);
+    }
+
+    public function getPlacedTokens(?int $location_id): array
+    {
+        $placedTokens = $this->getCollectionFromDB("SELECT $this->deckFields FROM token WHERE card_location IN (1, 2, 3)");
+        return array_values($placedTokens);
     }
 
     public function playerRole(int $player_id): string
@@ -287,6 +302,7 @@ class Game extends \Table
         );
         $result["hand"] = $this->getHand($current_player_id, false);
         $result["playedCards"] = $this->getPlayedCards(null);
+        $result["placedTokens"] = $this->getPlacedTokens(null);
 
         return $result;
     }

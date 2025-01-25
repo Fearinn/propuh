@@ -45,13 +45,12 @@ class TokenManager
         $this->validateLocation($player_id);
 
         $location = $this->LOCATIONS[$location_id];
-        $location_name = $location["name"];
         $location_label = $location["label"];
-        $this->game->tokens->moveCard($this->card_id, $location_name, $player_id);
+        $this->game->tokens->moveCard($this->card_id, $location_id, $player_id);
 
         $this->game->notify->all(
             "placeToken",
-            clienttranslate('${player_name} places a ${role_label} token in the ${location_label}'),
+            clienttranslate('${player_name} (${role_label}) places a token in the ${location_label}'),
             [
                 "player_id" => $player_id,
                 "token" => $this->getCard(),

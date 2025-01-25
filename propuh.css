@@ -321,8 +321,8 @@ html {
   --locationWidth: 386.9px;
   --locationHeight: 240px;
   --houseHeight: 581.2px;
-  --tokenHeight: 40px;
-  --tokenWidth: 40px;
+  --tokenHeight: 50px;
+  --tokenWidth: 50px;
 }
 
 .pph_gameArea {
@@ -356,6 +356,7 @@ html {
   font-size: 40px;
 }
 .pph_boards .pph_board {
+  position: relative;
   background-size: 100% 100%;
   height: var(--locationWidth);
   width: var(--locationHeight);
@@ -368,8 +369,16 @@ html {
   border: 4px solid blue;
 }
 .pph_boards .pph_boardCards {
-  position: relative;
+  position: absolute;
+  left: 50%;
   top: 20%;
+  transform: translateX(-50%);
+}
+.pph_boards .pph_boardTokens {
+  position: absolute;
+  left: 88%;
+  bottom: 1%;
+  transform: translateX(-50%);
 }
 .pph_boards .pph_house {
   grid-area: e;
@@ -385,6 +394,9 @@ html {
 }
 .pph_boards .pph_stove .pph_boardCards {
   top: 5%;
+}
+.pph_boards .pph_stove .pph_boardTokens {
+  bottom: 5%;
 }
 .pph_boards .pph_table {
   grid-area: g;
@@ -408,6 +420,7 @@ html {
 
 .pph_token {
   background-size: 100% 100%;
+  border-radius: 100%;
   height: var(--tokenHeight);
   width: var(--tokenWidth);
 }
@@ -416,6 +429,9 @@ html {
 }
 .pph_token[data-role=propuh] {
   background-image: url("img/propuhToken.png");
+}
+.pph_token .card-sides, .pph_token .card-side {
+  border-radius: 100%;
 }
 
 .pph_discard {

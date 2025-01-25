@@ -37,6 +37,7 @@ define([
         globals: {},
         stocks: {
           trick: {},
+          tokens: {},
         },
       };
 
@@ -65,6 +66,17 @@ define([
           element.parentElement.parentElement.style.backgroundPosition =
             backgroundPosition;
         },
+        setupBackDiv: (card, element) => {},
+      });
+
+      this.pph.managers.tokens = new CardManager(this, {
+        getId: (card) => `token-${card.id}`,
+        setupDiv: (card, element) => {
+          element.classList.add("pph_token");
+          const player_role = card.type;
+          element.dataset.role = player_role;
+        },
+        setupFrontDiv: (card, element) => {},
         setupBackDiv: (card, element) => {},
       });
 
@@ -138,14 +150,58 @@ define([
         this.pph.stocks.trick[card.location].addCard(card);
       });
 
+      // TOKENS
+      this.pph.stocks.tokens.discard = new VoidStock(
+        this.pph.managers.tokens,
+        document.getElementById("pph_discard"),
+        {}
+      );
+
+      this.pph.stocks.tokens[1] = new HandStock(
+        this.pph.managers.tokens,
+        document.getElementById("pph_bedTokens"),
+        {
+          sort: (a, b) => {
+            return a.type - b.type;
+          },
+          cardOverlap: "30px",
+        }
+      );
+
+      this.pph.stocks.tokens[2] = new HandStock(
+        this.pph.managers.tokens,
+        document.getElementById("pph_stoveTokens"),
+        {
+          sort: (a, b) => {
+            return a.type - b.type;
+          },
+          cardOverlap: "30px",
+        }
+      );
+
+      this.pph.stocks.tokens[3] = new HandStock(
+        this.pph.managers.tokens,
+        document.getElementById("pph_tableTokens"),
+        {
+          sort: (a, b) => {
+            return a.type - b.type;
+          },
+          cardOverlap: "30px",
+        }
+      );
+
+      gamedatas.placedTokens.forEach((token) => {
+        this.pph.stocks.tokens[token.location].addCard(token);
+      });
+
       for (const player_id in gamedatas.players) {
         const playerPanel = this.getPlayerPanelElement(player_id);
         playerPanel.classList.add("pph_playerPanel");
-        const playerRole = gamedatas.players[player_id].role;
+        const player_role = gamedatas.players[player_id].role;
 
         playerPanel.insertAdjacentHTML(
           "beforeend",
-          `<div id="pph_panelToken-${player_id}" class="pph_token" data-role=${playerRole}></div>`
+          `<div id="pph_panelToken-${player_id}" class="pph_token" data-role=${player_role}></div>`
         );
 
         if (player_id == this.player_id) {
@@ -311,6 +367,15 @@ define([
     notif_discardCard: async function (args) {
       const card = args.card;
       this.pph.stocks.trick.discard.addCard(card);
+    },
+
+    notif_placeToken: async function (args) {
+      const player_id = args.player_id;
+      const token = args.token;
+
+      this.pph.stocks.tokens[token.location].addCard(token, {
+        fromElement: document.getElementById(`pph_voidHand-${player_id}`),
+      });
     },
   });
 });
