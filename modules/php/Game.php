@@ -346,6 +346,7 @@ class Game extends \Table
         $result["hand"] = $this->getHand($current_player_id, false);
         $result["playedCards"] = $this->getPlayedCards(null);
         $result["placedTokens"] = $this->getPlacedTokens(null);
+        $result["deckCount"] = $this->cards->countCardsInLocation("deck");
 
         return $result;
     }

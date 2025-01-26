@@ -84,7 +84,7 @@ define([
         this.pph.managers.trick,
         document.getElementById("pph_deck"),
         {
-          cardNumber: 28,
+          cardNumber: gamedatas.deckCount,
           counter: {
             position: "center",
             extraClasses: "text-shadow pph_deckCounter",
