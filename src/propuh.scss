@@ -81,10 +81,14 @@ html {
 
     &Tokens {
       position: absolute;
-      left: 88%;
+      right: 0;
       bottom: 1%;
-      transform: translateX(-50%);
+      display: flex;
+      justify-content: center;
 
+      .pph_token:not(:first-child) {
+        margin-left: calc(var(--cardWidth) / -5);
+      }
     }
   }
 
@@ -134,10 +138,12 @@ html {
 }
 
 .pph_token {
+  position: relative;
   background-size: 100% 100%;
   border-radius: 100%;
   height: var(--tokenHeight);
   width: var(--tokenWidth);
+  z-index: 1;
 
   &[data-role="granny"] {
     background-image: url("img/grannyToken.png");
@@ -146,7 +152,8 @@ html {
     background-image: url("img/propuhToken.png");
   }
 
-  .card-sides, .card-side {
+  .card-sides,
+  .card-side {
     border-radius: 100%;
   }
 }

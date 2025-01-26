@@ -157,36 +157,27 @@ define([
         {}
       );
 
-      this.pph.stocks.tokens[1] = new HandStock(
+      this.pph.stocks.tokens[1] = new CardStock(
         this.pph.managers.tokens,
         document.getElementById("pph_bedTokens"),
         {
-          sort: (a, b) => {
-            return a.type - b.type;
-          },
-          cardOverlap: "30px",
+          sort: sortFunction("type"),
         }
       );
 
-      this.pph.stocks.tokens[2] = new HandStock(
+      this.pph.stocks.tokens[2] = new CardStock(
         this.pph.managers.tokens,
         document.getElementById("pph_stoveTokens"),
         {
-          sort: (a, b) => {
-            return a.type - b.type;
-          },
-          cardOverlap: "30px",
+          sort: sortFunction("type"),
         }
       );
 
-      this.pph.stocks.tokens[3] = new HandStock(
+      this.pph.stocks.tokens[3] = new CardStock(
         this.pph.managers.tokens,
         document.getElementById("pph_tableTokens"),
         {
-          sort: (a, b) => {
-            return a.type - b.type;
-          },
-          cardOverlap: "30px",
+          sort: sortFunction("type"),
         }
       );
 

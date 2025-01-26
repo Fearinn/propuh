@@ -376,9 +376,13 @@ html {
 }
 .pph_boards .pph_boardTokens {
   position: absolute;
-  left: 88%;
+  right: 0;
   bottom: 1%;
-  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+}
+.pph_boards .pph_boardTokens .pph_token:not(:first-child) {
+  margin-left: calc(var(--cardWidth) / -5);
 }
 .pph_boards .pph_house {
   grid-area: e;
@@ -419,10 +423,12 @@ html {
 }
 
 .pph_token {
+  position: relative;
   background-size: 100% 100%;
   border-radius: 100%;
   height: var(--tokenHeight);
   width: var(--tokenWidth);
+  z-index: 1;
 }
 .pph_token[data-role=granny] {
   background-image: url("img/grannyToken.png");
@@ -430,7 +436,8 @@ html {
 .pph_token[data-role=propuh] {
   background-image: url("img/propuhToken.png");
 }
-.pph_token .card-sides, .pph_token .card-side {
+.pph_token .card-sides,
+.pph_token .card-side {
   border-radius: 100%;
 }
 
