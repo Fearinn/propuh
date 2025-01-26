@@ -7,11 +7,6 @@ class TokenManager
     private array $LOCATIONS;
     private array $ROLES;
 
-    protected $card;
-    protected $role;
-    protected $role_label;
-    protected $player_id;
-
     public function __construct(int $card_id, \Table $game)
     {
         require "material.inc.php";
@@ -20,9 +15,9 @@ class TokenManager
         $this->card_id = $card_id;
 
         $card = $this->game->tokens->getCard($card_id);
-        $this->card = $card;
-        $this->role = $card["type"];
-        $this->role_label = $this->ROLES[$this->role]["label"];
+        $this->card = (array) $card;
+        $this->role = (string) $card["type"];
+        $this->role_label = (string) $this->ROLES[$this->role]["label"];
         $this->player_id = (int) $card["type_arg"];
     }
 
@@ -47,7 +42,7 @@ class TokenManager
         $location = (array) $this->LOCATIONS[$location_id];
         $location_label = (string) $location["label"];
 
-        $tokenCount = (int) $this->game->tokens->countCardsInLocation($location_id);
+        $tokenCount = (int) count($this->game->tokens->getCardsOfTypeInLocation($this->role, null, $location_id));
         $tokenLimit = (int) $location["limits"][$this->role];
 
         if ($tokenCount === $tokenLimit) {
@@ -64,7 +59,7 @@ class TokenManager
             return;
         }
 
-        $this->game->tokens->moveCard($this->card_id, $location_id, $player_id);
+        $this->game->tokens->moveCard($this->card_id, $location_id, $this->player_id);
 
         $this->game->notify->all(
             "placeToken",
