@@ -4,14 +4,26 @@ $this->LOCATIONS = [
     1 => [
         "name" => "bed",
         "label" => _("bed"),
+        "limits" => [
+            "granny" => 2,
+            "propuh" => 3,
+        ]
     ],
     2 => [
         "name" => "stove",
         "label" => _("stove"),
+        "limits" => [
+            "granny" => 3,
+            "propuh" => 1,
+        ]
     ],
     3 => [
         "name" => "table",
         "label" => _("table"),
+        "limits" => [
+            "granny" => 2,
+            "propuh" => 3,
+        ]
     ],
 ];
 

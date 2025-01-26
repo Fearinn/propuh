@@ -44,8 +44,26 @@ class TokenManager
     {
         $this->validateLocation($player_id);
 
-        $location = $this->LOCATIONS[$location_id];
-        $location_label = $location["label"];
+        $location = (array) $this->LOCATIONS[$location_id];
+        $location_label = (string) $location["label"];
+
+        $tokenCount = (int) $this->game->tokens->countCardsInLocation($location_id);
+        $tokenLimit = (int) $location["limits"][$this->role];
+
+        if ($tokenCount === $tokenLimit) {
+            $this->game->notify->all(
+                "message",
+                clienttranslate('${player_name} (${role_label}) may not place more tokens in the ${location_label}'),
+                [
+                    "player_id" => $player_id,
+                    "location_label" => $location_label,
+                    "i18n" => ["role_label", "location_label"],
+                ]
+            );
+
+            return;
+        }
+
         $this->game->tokens->moveCard($this->card_id, $location_id, $player_id);
 
         $this->game->notify->all(
@@ -54,7 +72,6 @@ class TokenManager
             [
                 "player_id" => $player_id,
                 "token" => $this->getCard(),
-                "role_label" => $this->role_label,
                 "location_label" => $location_label,
                 "i18n" => ["role_label", "location_label"],
             ]
