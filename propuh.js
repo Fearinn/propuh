@@ -55,7 +55,7 @@ define([
       this.pph.managers.trick = new CardManager(this, {
         cardHeight: 209.6,
         cardWidth: 150,
-        selectedCardClass: "pph_card-selected",
+        selectedCardClass: "pph_trickCard-selected",
         getId: (card) => `trick-${card.id}`,
         setupDiv: (card, element) => {
           element.classList.add("pph_trickCard");
@@ -247,7 +247,7 @@ define([
 
           this.pph.stocks.trick.hand
             .getCardElement(card)
-            .classList.add("pph_card-selected");
+            .classList.add("pph_trickCard-selected");
 
           this.setBoardsSelectable(card);
         }
@@ -266,8 +266,8 @@ define([
 
       if (stateName === "client_pickLocation") {
         document
-          .querySelector(".pph_card-selected")
-          ?.classList.remove("pph_card-selected");
+          .querySelector(".pph_trickCard-selected")
+          ?.classList.remove("pph_trickCard-selected");
         this.unsetBoardsSelectable();
       }
     },

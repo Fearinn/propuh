@@ -34,13 +34,6 @@ html {
   width: 100%;
 }
 
-.pph_trickCard {
-  position: relative;
-  background-image: url("img/trickCards.jpg");
-  height: var(--cardHeight);
-  width: var(--cardWidth);
-}
-
 .pph_boards {
   display: grid;
   grid-template-areas: "c f ." "g e h";
@@ -167,11 +160,23 @@ html {
 }
 
 .pph_hand {
-  margin-bottom: 40px;
+  position: fixed;
+  bottom: calc(var(--cardHeight) / -4);
+  left: 45%;
+  transform: translateX(-50%);
+  z-index: 1;
 }
 
-.pph_card-selected {
-  transform: unset !important;
-  border: 3px solid blue;
-  z-index: 1;
+.pph_trickCard {
+  position: relative;
+  background-image: url("img/trickCards.jpg");
+  height: var(--cardHeight);
+  width: var(--cardWidth);
+
+  &-selected {
+    top: calc(var(--cardHeight) / -4);
+    transform: unset !important;
+    border: 3px solid blue;
+    z-index: 1;
+  }
 }
