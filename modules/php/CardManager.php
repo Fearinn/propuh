@@ -4,7 +4,6 @@ namespace Bga\Games\Propuh;
 
 use const Bga\Games\propuh\ATTACK_CARD;
 use const Bga\Games\propuh\PLAY_COUNT;
-use const Bga\Games\propuh\RESOLVE_TRICK;
 
 class CardManager
 {
@@ -103,12 +102,10 @@ class CardManager
 
         $otherCard_id = (int) $this->game->getUniqueValueFromDB("SELECT card_id FROM card WHERE card_location IN (1, 2, 3) AND card_id<>'$this->card_id'");
         $otherCard = new CardManager($otherCard_id, $this->game);
+        $this->game->globals->set(ATTACK_CARD, $otherCard_id);
 
         if ((int) $otherCard->location() === $location_id) {
-            $this->game->globals->set(ATTACK_CARD, null);
-            $this->game->globals->set(RESOLVE_TRICK, false);
             $this->discard();
-            $otherCard->discard();
 
             if ($this->weight() >= $otherCard->weight()) {
                 $this->game->placeToken($location_id, $this->player_id);
@@ -119,7 +116,6 @@ class CardManager
 
         $this->discard();
         $this->game->placeToken($location_id, $this->player_id);
-        $this->game->globals->set(ATTACK_CARD, $otherCard_id);
     }
 
     public function discard(): void

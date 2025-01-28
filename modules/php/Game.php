@@ -115,42 +115,6 @@ class Game extends \Table
         return $this->getUniqueValueFromDB("SELECT player_role FROM player WHERE player_id=$player_id");
     }
 
-    // public function compareCards(array $cards, int $location_id,)
-    // {
-    //     uasort($cards, function ($card, $card_2) use ($location_id) {
-    //         $card_id = (int) $card["id"];
-    //         $card = new CardManager($card_id, $this);
-
-    //         $cardWeight = $card->value;
-    //         $suit_id = $card->suit_id;
-
-    //         if ($suit_id === $location_id) {
-    //             $cardWeight *= 10;
-    //         }
-
-    //         $card_id = (int) $card_2["id"];
-    //         $card = new CardManager($card_id, $this);
-
-    //         $cardWeight_2 = $card->value;
-    //         $suit_id = $card->suit_id;
-
-    //         if ($suit_id === $location_id) {
-    //             $cardWeight_2 += 10;
-    //         }
-
-    //         return $cardWeight_2 <=> $cardWeight;
-    //     });
-
-    //     foreach ($cards as $card_id => $card) {
-    //        $card = new CardManager($card_id, $this);
-    //        $card->discard(); 
-    //     }
-
-    //     $bestCard = reset($cards);
-    //     $player_id = (int) $bestCard["location_arg"];
-    //     $this->placeToken($location_id, $player_id);
-    // }
-
     public function placeToken(int $location_id, int $player_id)
     {
         $k_hand = array_keys($this->tokens->getPlayerHand($player_id));
@@ -241,7 +205,7 @@ class Game extends \Table
         $card->resolve();
 
         if ($this->globals->get(PLAY_COUNT) === 4) {
-            $card_id = $this->globals->get(ATTACK_CARD);
+            $card_id = (int) $this->getUniqueValueFromDB("SELECT card_id FROM card WHERE card_location IN (1, 2, 3)");
 
             if ($card_id) {
                 $card = new CardManager($card_id, $this);
