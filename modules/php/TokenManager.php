@@ -72,4 +72,24 @@ class TokenManager
             ]
         );
     }
+
+    public function discard(int $location_id, int $player_id): void
+    {
+        $location = (array) $this->LOCATIONS[$location_id];
+        $location_label = (string) $location["label"];
+
+        $opponent_id = (int) $this->game->getPlayerAfter($player_id);
+        $this->game->tokens->moveCard($this->card_id, "hand", $opponent_id);
+
+        $this->game->notify->all(
+            "discardToken",
+            clienttranslate('${player_name} (${role_label}) discards an opponent&apos;s token from the ${location_label}'),
+            [
+                "player_id" => $player_id,
+                "token" => $this->getCard(),
+                "location_label" => $location_label,
+                "i18n" => ["role_label", "location_label"],
+            ]
+        );
+    }
 }

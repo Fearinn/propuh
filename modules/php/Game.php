@@ -118,6 +118,10 @@ class Game extends \Table
         return $this->getUniqueValueFromDB("SELECT player_role FROM player WHERE player_id=$player_id");
     }
 
+    public function grannyId(): int {
+        return (int) $this->getUniqueValueFromDB("SELECT player_id FROM player WHERE player_role='granny'");
+    }
+
     public function placeToken(int $location_id, int $player_id)
     {
         $k_hand = array_keys($this->tokens->getPlayerHand($player_id));
@@ -125,6 +129,18 @@ class Game extends \Table
 
         $token = new TokenManager($tokenCard_id, $this);
         $token->place($location_id, $player_id);
+    }
+
+    public function discardToken() {
+        $player_id = (int) $this->grannyId();
+
+        $location_id = $this->globals->get(GRANNY_LOCATION);
+        $tokenCard_id = (int) $this->getUniqueValueFromDB("SELECT card_id FROM token WHERE card_location=$location_id AND card_type='propuh'");
+
+        if ($tokenCard_id) {
+            $token = new TokenManager($tokenCard_id, $this);
+            $token->discard($location_id, $player_id);
+        }
     }
 
     /**
@@ -269,6 +285,8 @@ class Game extends \Table
         $this->globals->set(ATTACK_CARD, null);
         $this->globals->set(RESOLVE_TRICK, false);
         $this->globals->set(PLAY_COUNT, 0);
+
+        $this->discardToken();
 
         $players = $this->loadPlayersBasicInfos();
         $drawnCards = [];

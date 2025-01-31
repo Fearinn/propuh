@@ -122,7 +122,8 @@ define([
         lastChange
       ) => {
         this.statusBar.removeActionButtons();
-        this.pph.selections.card_id = selection.length > 0 ? lastChange.id : null;
+        this.pph.selections.card_id =
+          selection.length > 0 ? lastChange.id : null;
         this.handleConfirmationBtn();
       };
 
@@ -355,13 +356,18 @@ define([
 
       this.statusBar.removeActionButtons();
 
-      if (card_id && location_id) {
+      if (stateName === "playerTurn") {
+        if (card_id && location_id) {
+          this.statusBar.addActionButton(_("Confirm"), () => {
+            this.actPlayCard(card_id, location_id);
+          });
+        }
+        return;
+      }
+
+      if (location_id) {
         this.statusBar.addActionButton(_("Confirm"), () => {
-          if (stateName === "grannyMove") {
-            this.actMoveGranny(location_id);
-            return;
-          }
-          this.actPlayCard(card_id, location_id);
+          this.actMoveGranny(location_id);
         });
       }
     },
@@ -448,6 +454,11 @@ define([
       this.pph.stocks.tokens[token.location].addCard(token, {
         fromElement: document.getElementById(`pph_voidHand-${player_id}`),
       });
+    },
+
+    notif_discardToken: async function (args) {
+      const token = args.token;
+      this.pph.stocks.tokens.discard.addCard(token);
     },
   });
 });
