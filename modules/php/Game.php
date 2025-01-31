@@ -139,10 +139,6 @@ class Game extends \Table
     {
         $player_id = (int) $this->getActivePlayerId();
 
-        if ($this->playerRole($player_id) !== GRANNY) {
-            throw new \BgaUserException("The Propuh player may not move the standee");
-        }
-
         $this->globals->set(GRANNY_LOCATION, $location_id);
 
         $this->notify->all(
@@ -157,6 +153,10 @@ class Game extends \Table
         );
 
         $this->gamestate->nextState("playerTurn");
+    }
+
+    public function actSkipGrannyMove(): void {
+        $this->gamestate->nextState("skip");
     }
 
     public function actPlayCard(#[IntParam(min: 1, max: 28)] int $card_id, #[IntParam(min: 1, max: 3)] int $location_id): void

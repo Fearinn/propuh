@@ -399,7 +399,11 @@ define([
     },
 
     actMoveGranny: function (location_id) {
-      this.performAction("actMoveGranny", {location_id});
+      this.performAction("actMoveGranny", { location_id });
+    },
+
+    actSkipGrannyMove: function () {
+      this.performAction("actSkipGrannyMove");
     },
 
     actPlayCard: function (card_id, location_id) {

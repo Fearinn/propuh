@@ -47,7 +47,7 @@ $machinestates = [
             "actMoveGranny",
             "actSkipGrannyMove",
         ],
-        "transitions" => ["playerTurn" => ST_PLAYER_TURN],
+        "transitions" => ["playerTurn" => ST_PLAYER_TURN, "skip" => ST_PLAYER_TURN],
     ],
 
     ST_PLAYER_TURN => [
