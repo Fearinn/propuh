@@ -34,13 +34,18 @@ define([
       this.pph = {
         managers: {},
         info: {},
-        globals: {},
+        defaultSelections: {
+          card_id: null,
+          location_id: null,
+        },
         stocks: {
           trick: {},
           tokens: {},
           granny: {},
         },
       };
+
+      this.pph.selections = this.pph.defaultSelections;
 
       this.pph.managers.zoom = new ZoomManager({
         element: document.getElementById("pph_gameArea"),
@@ -117,13 +122,8 @@ define([
         lastChange
       ) => {
         this.statusBar.removeActionButtons();
-
-        if (selection.length === 1) {
-          this.statusBar.addActionButton(_("Confirm card"), () => {
-            this.onConfirmCard(lastChange);
-          });
-          return;
-        }
+        this.pph.selections.card_id = selection.length > 0 ? lastChange.id : null;
+        this.handleConfirmationBtn();
       };
 
       this.pph.stocks.trick.hand.addCards(
@@ -263,27 +263,7 @@ define([
       if (this.isCurrentPlayerActive()) {
         if (stateName === "playerTurn") {
           this.pph.stocks.trick.hand.setSelectionMode("single");
-        }
-
-        if (stateName === "client_pickLocation") {
-          this.statusBar.setTitle("${you} must select a location");
-          this.statusBar.addActionButton(
-            _("Select other card"),
-            () => {
-              this.restoreServerGameState();
-            },
-            {
-              color: "secondary",
-            }
-          );
-
-          const card = args.client_args.card;
-
-          this.pph.stocks.trick.hand
-            .getCardElement(card)
-            .classList.add("pph_trickCard-selected");
-
-          this.setBoardsSelectable(stateName, { card_id: card.id });
+          this.setBoardsSelectable();
         }
 
         if (stateName === "grannyMove") {
@@ -295,7 +275,7 @@ define([
             { color: "alert" }
           );
 
-          this.setBoardsSelectable(stateName);
+          this.setBoardsSelectable();
         }
       }
     },
@@ -306,14 +286,10 @@ define([
     onLeavingState: function (stateName) {
       console.log("Leaving state: " + stateName);
 
+      this.pph.selections = this.pph.defaultSelections;
+
       if (stateName === "playerTurn") {
         this.pph.stocks.trick.hand.setSelectionMode("none");
-      }
-
-      if (stateName === "client_pickLocation") {
-        document
-          .querySelector(".pph_trickCard-selected")
-          ?.classList.remove("pph_trickCard-selected");
         this.unsetBoardsSelectable();
       }
 
@@ -332,7 +308,11 @@ define([
     ///////////////////////////////////////////////////
     //// Utility methods
 
-    setBoardsSelectable: function (stateName, args = {}) {
+    getStateName: function () {
+      return this.gamedatas.gamestate.name;
+    },
+
+    setBoardsSelectable: function () {
       const selectedClass = "pph_board-selected";
       const boardElements = document.querySelectorAll("[data-board]");
 
@@ -340,35 +320,21 @@ define([
         boardElement.classList.add("pph_board-selectable");
 
         boardElement.onclick = () => {
-          const buttonId = "pph_confirmLocation_btn";
-          document.getElementById(buttonId)?.remove();
-
           boardElement.classList.toggle(selectedClass);
+
+          this.pph.selections.location_id = boardElement.classList.contains(
+            selectedClass
+          )
+            ? boardElement.dataset.board
+            : null;
+
+          this.handleConfirmationBtn();
 
           boardElements.forEach((element) => {
             if (element.id !== boardElement.id) {
               element.classList.remove(selectedClass);
             }
           });
-
-          if (boardElement.classList.contains(selectedClass)) {
-            this.statusBar.addActionButton(
-              _("Confirm location"),
-              () => {
-                const location_id = boardElement.dataset.board;
-
-                if (stateName === "grannyMove") {
-                  this.actMoveGranny(location_id);
-                  return;
-                }
-                const card_id = args.card_id;
-                this.actPlayCard(card_id, location_id);
-              },
-              {
-                id: buttonId,
-              }
-            );
-          }
         };
       });
     },
@@ -383,19 +349,28 @@ define([
       });
     },
 
+    handleConfirmationBtn: function () {
+      const stateName = this.getStateName();
+      const { card_id, location_id } = this.pph.selections;
+
+      this.statusBar.removeActionButtons();
+
+      if (card_id && location_id) {
+        this.statusBar.addActionButton(_("Confirm"), () => {
+          if (stateName === "grannyMove") {
+            this.actMoveGranny(location_id);
+            return;
+          }
+          this.actPlayCard(card_id, location_id);
+        });
+      }
+    },
+
     ///////////////////////////////////////////////////
     //// Player's action
 
     performAction: function (action, args = {}) {
       this.bgaPerformAction(action, args);
-    },
-
-    onConfirmCard: function (card) {
-      this.setClientState("client_pickLocation", {
-        client_args: {
-          card,
-        },
-      });
     },
 
     actMoveGranny: function (location_id) {

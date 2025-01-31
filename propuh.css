@@ -438,6 +438,7 @@ html {
   position: absolute;
   height: var(--cardHeight);
   width: var(--cardWidth);
+  pointer-events: none;
 }
 
 .pph_token {
