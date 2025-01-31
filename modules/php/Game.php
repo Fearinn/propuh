@@ -31,6 +31,7 @@ const PROPUH = "propuh";
 const ATTACK_CARD = "attackCard";
 const RESOLVE_TRICK = "resolveTrick";
 const PLAY_COUNT = "playCount";
+const GRANNY_LOCATION = "grannyLocation";
 
 class Game extends \Table
 {
@@ -311,6 +312,7 @@ class Game extends \Table
         $result["playedCards"] = $this->getPlayedCards(null);
         $result["placedTokens"] = $this->getPlacedTokens(null);
         $result["deckCount"] = $this->cards->countCardsInLocation("deck");
+        $result["grannyLocation"] = $this->globals->get(GRANNY_LOCATION);
 
         return $result;
     }
@@ -376,6 +378,7 @@ class Game extends \Table
         }
 
         $this->globals->set(PLAY_COUNT, 0);
+        $this->globals->set(GRANNY_LOCATION, 2);
 
         $this->reloadPlayersBasicInfos();
 

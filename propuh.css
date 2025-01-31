@@ -323,6 +323,8 @@ html {
   --houseHeight: 581.2px;
   --tokenHeight: 50px;
   --tokenWidth: 50px;
+  --standeeHeight: 140px;
+  --standeeWidth: 87.6px;
 }
 
 .pph_gameArea {
@@ -377,11 +379,34 @@ html {
 .pph_boards .pph_boardTokens .pph_token:not(:first-child) {
   margin-left: calc(var(--cardWidth) / -5);
 }
+.pph_boards .pph_granny {
+  background-image: url("img/standee.png");
+  background-size: 100% 100%;
+  height: var(--standeeHeight);
+  width: var(--standeeWidth);
+}
 .pph_boards .pph_house {
   grid-area: e;
   background-image: url("img/house.jpg");
   height: var(--houseHeight);
   width: var(--locationWidth);
+}
+.pph_boards .pph_location {
+  position: absolute;
+  height: var(--standeeHeight);
+  width: var(--standeeWidth);
+}
+.pph_boards .pph_locationBed {
+  top: 5%;
+  right: 3%;
+}
+.pph_boards .pph_locationStove {
+  top: 1%;
+  left: 20%;
+}
+.pph_boards .pph_locationTable {
+  bottom: 18%;
+  left: 18%;
 }
 .pph_boards .pph_stove {
   grid-area: f;

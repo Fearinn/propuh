@@ -38,6 +38,7 @@ define([
         stocks: {
           trick: {},
           tokens: {},
+          granny: {},
         },
       };
 
@@ -75,6 +76,15 @@ define([
           element.classList.add("pph_token");
           const player_role = card.type;
           element.dataset.role = player_role;
+        },
+        setupFrontDiv: (card, element) => {},
+        setupBackDiv: (card, element) => {},
+      });
+
+      this.pph.managers.granny = new CardManager(this, {
+        getId: (card) => `granny-${card.id}`,
+        setupDiv: (card, element) => {
+          element.classList.add("pph_granny");
         },
         setupFrontDiv: (card, element) => {},
         setupBackDiv: (card, element) => {},
@@ -183,6 +193,30 @@ define([
 
       gamedatas.placedTokens.forEach((token) => {
         this.pph.stocks.tokens[token.location].addCard(token);
+      });
+
+      // GRANNY STANDEE
+
+      this.pph.stocks.granny[1] = new HandStock(
+        this.pph.managers.granny,
+        document.getElementById("pph_locationBed"),
+        {}
+      );
+
+      this.pph.stocks.granny[2] = new HandStock(
+        this.pph.managers.granny,
+        document.getElementById("pph_locationStove"),
+        {}
+      );
+
+      this.pph.stocks.granny[3] = new HandStock(
+        this.pph.managers.granny,
+        document.getElementById("pph_locationTable"),
+        {}
+      );
+
+      this.pph.stocks.granny[gamedatas.grannyLocation].addCard({
+        id: "granny",
       });
 
       for (const player_id in gamedatas.players) {

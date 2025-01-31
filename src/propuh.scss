@@ -23,6 +23,8 @@ html {
   --houseHeight: 581.2px;
   --tokenHeight: 50px;
   --tokenWidth: 50px;
+  --standeeHeight: 140px;
+  --standeeWidth: 87.6px;
 }
 
 .pph_gameArea {
@@ -85,11 +87,39 @@ html {
     }
   }
 
+  .pph_granny {
+    background-image: url("img/standee.png");
+    background-size: 100% 100%;
+    height: var(--standeeHeight);
+    width: var(--standeeWidth);
+  }
+
   .pph_house {
     grid-area: e;
     background-image: url("img/house.jpg");
     height: var(--houseHeight);
     width: var(--locationWidth);
+  }
+
+  .pph_location {
+    position: absolute;
+    height: var(--standeeHeight);
+    width: var(--standeeWidth);
+
+    &Bed {
+      top: 5%;
+      right: 3%;
+    }
+
+    &Stove {
+      top: 1%;
+      left: 20%;
+    }
+
+    &Table {
+      bottom: 18%;
+      left: 18%;
+    }
   }
 
   .pph_stove {
