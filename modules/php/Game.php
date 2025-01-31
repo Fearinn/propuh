@@ -37,6 +37,7 @@ class Game extends \Table
 {
     private array $CARDS;
     private array $ROLES;
+    private array $LOCATIONS;
     public string $deckFields = "card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg";
 
     public function __construct()
@@ -94,7 +95,8 @@ class Game extends \Table
         return array_values($playedCards);
     }
 
-    public function hideCards(array $cards): array {
+    public function hideCards(array $cards): array
+    {
         $hiddenCards = [];
         foreach ($cards as $card_id => $card) {
             $card["type"] = null;
@@ -133,6 +135,30 @@ class Game extends \Table
      *
      * @throws BgaUserException
      */
+    public function actMoveGranny(#[IntParam(min: 1, max: 3)] int $location_id): void
+    {
+        $player_id = (int) $this->getActivePlayerId();
+
+        if ($this->playerRole($player_id) !== GRANNY) {
+            throw new \BgaUserException("The Propuh player may not move the standee");
+        }
+
+        $this->globals->set(GRANNY_LOCATION, $location_id);
+
+        $this->notify->all(
+            "moveGranny",
+            clienttranslate('${player_name} (${role_label}) moves the standee to the ${location_label}'),
+            [
+                "player_id" => $player_id,
+                "location_id" => $location_id,
+                "location_label" => $this->LOCATIONS[$location_id]["label"],
+                "i18n" => ["role_label", "location_label"],
+            ]
+        );
+
+        $this->gamestate->nextState("playerTurn");
+    }
+
     public function actPlayCard(#[IntParam(min: 1, max: 28)] int $card_id, #[IntParam(min: 1, max: 3)] int $location_id): void
     {
         $player_id = (int) $this->getActivePlayerId();
@@ -149,6 +175,7 @@ class Game extends \Table
      * @return array
      * @see ./states.inc.php
      */
+
     public function arg_playerTurn(): array
     {
         // Get some values from the current game situation from the database.
@@ -180,6 +207,23 @@ class Game extends \Table
      *
      * The action method of state `nextPlayer` is called everytime the current game state is set to `nextPlayer`.
      */
+
+    public function arg_grannyMove(): array
+    {
+        return [
+            "grannyLocation" => $this->globals->get(GRANNY_LOCATION, 2),
+        ];
+    }
+
+    // public function st_grannyMove(): void
+    // {
+    //     $args = $this->arg_grannyMove();
+    //     if ($args["no_notify"]) {
+    //         $this->gamestate->nextState("playerTurn");
+    //         return;
+    //     }
+    // }
+
     public function st_betweenPlayers(): void
     {
         $player_id = (int)$this->getActivePlayerId();

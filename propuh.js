@@ -283,7 +283,19 @@ define([
             .getCardElement(card)
             .classList.add("pph_trickCard-selected");
 
-          this.setBoardsSelectable(card);
+          this.setBoardsSelectable(stateName, { card_id: card.id });
+        }
+
+        if (stateName === "grannyMove") {
+          this.statusBar.addActionButton(
+            _("Skip"),
+            () => {
+              this.actSkipGrannyMove();
+            },
+            { color: "alert" }
+          );
+
+          this.setBoardsSelectable(stateName);
         }
       }
     },
@@ -304,6 +316,10 @@ define([
           ?.classList.remove("pph_trickCard-selected");
         this.unsetBoardsSelectable();
       }
+
+      if (stateName === "grannyMove") {
+        this.unsetBoardsSelectable();
+      }
     },
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -316,7 +332,7 @@ define([
     ///////////////////////////////////////////////////
     //// Utility methods
 
-    setBoardsSelectable: function (card) {
+    setBoardsSelectable: function (stateName, args = {}) {
       const selectedClass = "pph_board-selected";
       const boardElements = document.querySelectorAll("[data-board]");
 
@@ -340,7 +356,13 @@ define([
               _("Confirm location"),
               () => {
                 const location_id = boardElement.dataset.board;
-                this.actPlayCard(card.id, location_id);
+
+                if (stateName === "grannyMove") {
+                  this.actMoveGranny(location_id);
+                  return;
+                }
+                const card_id = args.card_id;
+                this.actPlayCard(card_id, location_id);
               },
               {
                 id: buttonId,
@@ -376,6 +398,10 @@ define([
       });
     },
 
+    actMoveGranny: function (location_id) {
+      this.performAction("actMoveGranny", {location_id});
+    },
+
     actPlayCard: function (card_id, location_id) {
       this.performAction("actPlayCard", { card_id, location_id });
     },
@@ -384,6 +410,13 @@ define([
     //// Reaction to cometD notifications
     setupNotifications: function () {
       this.bgaSetupPromiseNotifications();
+    },
+
+    notif_moveGranny: async function (args) {
+      const location_id = args.location_id;
+      this.pph.stocks.granny[location_id].addCard({
+        id: "granny",
+      });
     },
 
     notif_playCard: async function (args) {

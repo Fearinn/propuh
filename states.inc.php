@@ -17,10 +17,11 @@
 
 // define contants for state ids
 if (!defined('ST_END_GAME')) { // ensure this block is only invoked once, since it is included multiple times
-    define("ST_PLAYER_TURN", 2);
-    define("ST_BETWEEN_PLAYERS", 3);
-    define("ST_RESOLVE_TRICK", 4);
-    define("ST_BETWEEN_ROUNDS", 5);
+    define("ST_GRANNY_MOVE", 2);
+    define("ST_PLAYER_TURN", 3);
+    define("ST_BETWEEN_PLAYERS", 4);
+    define("ST_RESOLVE_TRICK", 5);
+    define("ST_BETWEEN_ROUNDS", 6);
     define("ST_END_GAME", 99);
 }
 
@@ -35,6 +36,19 @@ $machinestates = [
         "action" => "stGameSetup",
         "transitions" => ["" => 2]
     ),
+
+    ST_GRANNY_MOVE => [
+        "name" => "grannyMove",
+        "description" => clienttranslate('${actplayer} may move the Granny standee to a new location'),
+        "descriptionmyturn" => clienttranslate('${you} may move the Granny standee to a new location'),
+        "type" => "activeplayer",
+        "args" => "arg_grannyMove",
+        "possibleactions" => [
+            "actMoveGranny",
+            "actSkipGrannyMove",
+        ],
+        "transitions" => ["playerTurn" => ST_PLAYER_TURN],
+    ],
 
     ST_PLAYER_TURN => [
         "name" => "playerTurn",
