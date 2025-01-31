@@ -278,7 +278,7 @@ class Game extends \Table
         // Get some values from the current game situation from the database.
 
         return [
-            "playableCardsIds" => [1, 2],
+            "grannyLocation" => $this->globals->get(GRANNY_LOCATION, 2),
         ];
     }
 

@@ -34,10 +34,6 @@ define([
       this.pph = {
         managers: {},
         info: {},
-        defaultSelections: {
-          card_id: null,
-          location_id: null,
-        },
         stocks: {
           trick: {},
           tokens: {},
@@ -45,7 +41,10 @@ define([
         },
       };
 
-      this.pph.selections = this.pph.defaultSelections;
+      this.pph.selections = {
+        card_id: null,
+        location_id: null,
+      };
 
       this.pph.managers.zoom = new ZoomManager({
         element: document.getElementById("pph_gameArea"),
@@ -157,7 +156,6 @@ define([
         {}
       );
 
-
       gamedatas.playedCards.forEach((card) => {
         this.pph.stocks.trick[card.location].addCard(card);
       });
@@ -262,11 +260,6 @@ define([
       console.log("Entering state: " + stateName, args);
 
       if (this.isCurrentPlayerActive()) {
-        if (stateName === "playerTurn") {
-          this.pph.stocks.trick.hand.setSelectionMode("single");
-          this.setBoardsSelectable();
-        }
-
         if (stateName === "grannyMove") {
           this.statusBar.addActionButton(
             _("Skip"),
@@ -275,6 +268,13 @@ define([
             },
             { color: "alert" }
           );
+
+          const grannyLocation = args.args.grannyLocation;
+          this.setBoardsSelectable(grannyLocation);
+        }
+
+        if (stateName === "playerTurn") {
+          this.pph.stocks.trick.hand.setSelectionMode("single");
 
           this.setBoardsSelectable();
         }
@@ -287,7 +287,10 @@ define([
     onLeavingState: function (stateName) {
       console.log("Leaving state: " + stateName);
 
-      this.pph.selections = this.pph.defaultSelections;
+      this.pph.selections = {
+        card_id: null,
+        location_id: null,
+      };
 
       if (stateName === "playerTurn") {
         this.pph.stocks.trick.hand.setSelectionMode("none");
@@ -313,11 +316,16 @@ define([
       return this.gamedatas.gamestate.name;
     },
 
-    setBoardsSelectable: function () {
+    setBoardsSelectable: function (grannyLocation) {
       const selectedClass = "pph_board-selected";
       const boardElements = document.querySelectorAll("[data-board]");
 
       boardElements.forEach((boardElement) => {
+        const location_id = boardElement.dataset.board;
+        if (location_id == grannyLocation) {
+          return;
+        }
+
         boardElement.classList.add("pph_board-selectable");
 
         boardElement.onclick = () => {
@@ -326,7 +334,7 @@ define([
           this.pph.selections.location_id = boardElement.classList.contains(
             selectedClass
           )
-            ? boardElement.dataset.board
+            ? location_id
             : null;
 
           this.handleConfirmationBtn();

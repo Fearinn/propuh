@@ -89,7 +89,7 @@ $machinestates = [
         "descriptionmyturn" => clienttranslate("Finishing round..."),
         "type" => "game",
         "action" => "st_betweenRounds",
-        "transitions" => ["nextRound" => ST_PLAYER_TURN],
+        "transitions" => ["nextRound" => ST_GRANNY_MOVE],
     ],
 
     // Final state.
