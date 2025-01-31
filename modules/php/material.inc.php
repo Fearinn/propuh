@@ -2,8 +2,8 @@
 
 $this->LOCATIONS = [
     1 => [
-        "name" => "bed",
-        "label" => _("bed"),
+        "name" => "table",
+        "label" => _("table"),
         "limits" => [
             "granny" => 2,
             "propuh" => 3,
@@ -18,8 +18,8 @@ $this->LOCATIONS = [
         ]
     ],
     3 => [
-        "name" => "table",
-        "label" => _("table"),
+        "name" => "bed",
+        "label" => _("bed"),
         "limits" => [
             "granny" => 2,
             "propuh" => 3,
@@ -29,22 +29,22 @@ $this->LOCATIONS = [
 
 $this->CARDS = [
     1 => [
-        "suit" => 1,
+        "suit" => 3,
         "count" => 1,
         "value" => 1,
     ],
     2 => [
-        "suit" => 1,
+        "suit" => 3,
         "count" => 4,
         "value" => 2,
     ],
     3 => [
-        "suit" => 1,
+        "suit" => 3,
         "count" => 4,
         "value" => 3,
     ],
     4 => [
-        "suit" => 1,
+        "suit" => 3,
         "count" => 2,
         "value" => 4,
     ],
@@ -69,36 +69,56 @@ $this->CARDS = [
         "value" => 4,
     ],
     9 => [
-        "suit" => 3,
+        "suit" => 1,
         "count" => 1,
         "value" => 1,
     ],
     10 => [
-        "suit" => 3,
+        "suit" => 1,
         "count" => 4,
         "value" => 2,
     ],
     11 => [
-        "suit" => 3,
+        "suit" => 1,
         "count" => 4,
         "value" => 3,
     ],
     12 => [
-        "suit" => 3,
+        "suit" => 1,
         "count" => 2,
         "value" => 4,
     ],
 ];
 
 $this->ROLES = [
-    "propuh" => [
-        "label" => "Propuh",
-        "goals" => [],
-    ],
     "granny" => [
         "label" => clienttranslate("Granny"),
         "goals" => [
-
+            1 => [
+                "tokens" => 2,
+                "label" => clienttranslate("sets the table"),
+            ],
+            2 => [
+                "tokens" => 3,
+                "label" => clienttranslate("cooks sarma"),
+            ],
+            3 => [
+                "tokens" => 2,
+                "label" => clienttranslate("makes the bed"),
+            ],
         ],
-    ]
+    ],
+    "propuh" => [
+        "label" => "Propuh",
+        "goals" => [
+            1 => [
+                "tokens" => 2,
+                "label" => clienttranslate("opens the door"),
+            ],
+            3 => [
+                "tokens" => 2,
+                "label" => clienttranslate("opens the window"),
+            ],
+        ],
+    ],
 ];

@@ -107,7 +107,11 @@ class Game extends \Table
         return $hiddenCards;
     }
 
-    public function getPlacedTokens(?int $location_id): array
+    public function countPlacedTokens(int $location_id, string $player_role): int {
+        return count($this->tokens->getCardsOfTypeInLocation($player_role, null, $location_id));
+    }
+
+    public function getPlacedTokens(): array
     {
         $placedTokens = $this->getCollectionFromDB("SELECT $this->deckFields FROM token WHERE card_location IN (1, 2, 3)");
         return array_values($placedTokens);
@@ -118,29 +122,105 @@ class Game extends \Table
         return $this->getUniqueValueFromDB("SELECT player_role FROM player WHERE player_id=$player_id");
     }
 
-    public function grannyId(): int {
+    public function grannyId(): int
+    {
         return (int) $this->getUniqueValueFromDB("SELECT player_id FROM player WHERE player_role='granny'");
     }
 
     public function placeToken(int $location_id, int $player_id)
     {
-        $k_hand = array_keys($this->tokens->getPlayerHand($player_id));
-        $tokenCard_id = reset($k_hand);
+        $tokenCard_id = (int) $this->getUniqueValueFromDB("SELECT card_id FROM token WHERE card_location='hand' AND card_location_arg=$player_id LIMIT 1");
 
         $token = new TokenManager($tokenCard_id, $this);
         $token->place($location_id, $player_id);
     }
 
-    public function discardToken() {
+    public function discardToken(): void
+    {
         $player_id = (int) $this->grannyId();
 
         $location_id = $this->globals->get(GRANNY_LOCATION);
-        $tokenCard_id = (int) $this->getUniqueValueFromDB("SELECT card_id FROM token WHERE card_location=$location_id AND card_type='propuh'");
+        $tokenCard_id = (int) $this->getUniqueValueFromDB("SELECT card_id FROM token WHERE card_location=$location_id AND card_type='propuh' LIMIT 1");
 
         if ($tokenCard_id) {
             $token = new TokenManager($tokenCard_id, $this);
             $token->discard($location_id, $player_id);
         }
+    }
+
+    public function drawCards(): void
+    {
+        $players = $this->loadPlayersBasicInfos();
+        $drawnCards = [];
+        foreach ($players as $player_id => $player) {
+            $cards = $this->cards->pickCards(2, "deck", $player_id);
+            $cards = array_values($cards);
+
+            $drawnCards[$player_id] = $this->hideCards($cards);
+
+            $this->notify->player(
+                $player_id,
+                "drawCards",
+                "",
+                [
+                    "player_id" => $player_id,
+                    "cards" => $cards
+                ]
+            );
+        }
+
+        $msg = !!$cards ? clienttranslate("New round: Each player draws 2 cards from the deck") : clienttranslate("New round: no cards in the deck");
+
+        $this->notify->all(
+            "newRound",
+            $msg,
+            [
+                "cards" => $drawnCards,
+            ]
+        );
+    }
+
+    public function checkGoals(bool $silent): bool {
+        $players = $this->loadPlayersBasicInfos();
+
+        $winner_id = null;
+        foreach ($players as $player_id => $player) {
+            $player_role = $this->playerRole($player_id);
+            $goals = $this->ROLES[$player_role]["goals"];
+
+            $goalsMet = true;
+            foreach ($goals as $location_id => $goal) {
+                $tokenGoal = $goal["tokens"];
+                $tokenCount = $this->countPlacedTokens($location_id, $player_role);
+
+                if ($tokenCount < $tokenGoal) {
+                    $goalsMet = false;
+                    continue;
+                }
+
+                if (!$silent) {
+                    $this->notify->all(
+                        "completeGoal",
+                        clienttranslate('${player_name} (${role_label}) ${goal_label}'),
+                        [
+                            "player_id" => $player_id,
+                            "goal_label" => $goal["label"],
+                            "i18n" => ["role_label", "goal_label"],
+                        ]
+                    );
+                }
+            }
+
+            if ($goalsMet) {
+                $winner_id = $player_id;
+
+                if ($player_role === PROPUH) {
+                    break;
+                }
+            }
+        }
+
+        return !!$winner_id;
     }
 
     /**
@@ -171,7 +251,8 @@ class Game extends \Table
         $this->gamestate->nextState("playerTurn");
     }
 
-    public function actSkipGrannyMove(): void {
+    public function actSkipGrannyMove(): void
+    {
         $this->gamestate->nextState("skip");
     }
 
@@ -287,35 +368,7 @@ class Game extends \Table
         $this->globals->set(PLAY_COUNT, 0);
 
         $this->discardToken();
-
-        $players = $this->loadPlayersBasicInfos();
-        $drawnCards = [];
-        foreach ($players as $player_id => $player) {
-            $cards = $this->cards->pickCards(2, "deck", $player_id);
-            $cards = array_values($cards);
-
-            $drawnCards[$player_id] = $this->hideCards($cards);
-
-            $this->notify->player(
-                $player_id,
-                "drawCards",
-                "",
-                [
-                    "player_id" => $player_id,
-                    "cards" => $cards
-                ]
-            );
-        }
-
-        $msg = !!$cards ? clienttranslate("New round: Each player draws 2 cards from the deck") : clienttranslate("New round: no cards in the deck");
-
-        $this->notify->all(
-            "newRound",
-            $msg,
-            [
-                "cards" => $drawnCards,
-            ]
-        );
+        $this->drawCards();
 
         $this->gamestate->nextState("nextRound");
     }
@@ -486,5 +539,9 @@ class Game extends \Table
         }
 
         throw new \feException("Zombie mode not supported at this game state: \"{$state_name}\".");
+    }
+
+    public function debug_goals(): void {
+        $this->checkGoals(false);
     }
 }

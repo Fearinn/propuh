@@ -141,7 +141,7 @@ define([
 
       this.pph.stocks.trick[1] = new HandStock(
         this.pph.managers.trick,
-        document.getElementById("pph_bedCards"),
+        document.getElementById("pph_tableCards"),
         {}
       );
 
@@ -153,9 +153,10 @@ define([
 
       this.pph.stocks.trick[3] = new HandStock(
         this.pph.managers.trick,
-        document.getElementById("pph_tableCards"),
+        document.getElementById("pph_bedCards"),
         {}
       );
+
 
       gamedatas.playedCards.forEach((card) => {
         this.pph.stocks.trick[card.location].addCard(card);
@@ -170,7 +171,7 @@ define([
 
       this.pph.stocks.tokens[1] = new CardStock(
         this.pph.managers.tokens,
-        document.getElementById("pph_bedTokens"),
+        document.getElementById("pph_tableTokens"),
         {
           sort: sortFunction("type"),
         }
@@ -186,7 +187,7 @@ define([
 
       this.pph.stocks.tokens[3] = new CardStock(
         this.pph.managers.tokens,
-        document.getElementById("pph_tableTokens"),
+        document.getElementById("pph_bedTokens"),
         {
           sort: sortFunction("type"),
         }
@@ -197,10 +198,9 @@ define([
       });
 
       // GRANNY STANDEE
-
       this.pph.stocks.granny[1] = new HandStock(
         this.pph.managers.granny,
-        document.getElementById("pph_locationBed"),
+        document.getElementById("pph_locationTable"),
         {}
       );
 
@@ -212,7 +212,7 @@ define([
 
       this.pph.stocks.granny[3] = new HandStock(
         this.pph.managers.granny,
-        document.getElementById("pph_locationTable"),
+        document.getElementById("pph_locationBed"),
         {}
       );
 
