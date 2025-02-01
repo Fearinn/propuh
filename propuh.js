@@ -120,7 +120,6 @@ define([
         selection,
         lastChange
       ) => {
-        this.statusBar.removeActionButtons();
         this.pph.selections.card_id =
           selection.length > 0 ? lastChange.id : null;
         this.handleConfirmationBtn();
@@ -274,8 +273,18 @@ define([
         }
 
         if (stateName === "playerTurn") {
-          this.pph.stocks.trick.hand.setSelectionMode("single");
+          const canUndo = args.args.canUndo;
+          if (canUndo) {
+            this.statusBar.addActionButton(
+              _("Move the standee"),
+              () => {
+                this.actUndoSkipGrannyMove();
+              },
+              { color: "secondary" }
+            );
+          }
 
+          this.pph.stocks.trick.hand.setSelectionMode("single");
           this.setBoardsSelectable();
         }
       }
@@ -362,21 +371,32 @@ define([
       const stateName = this.getStateName();
       const { card_id, location_id } = this.pph.selections;
 
-      this.statusBar.removeActionButtons();
+      const buttonId = "pph_confirmationBtn";
+      document.getElementById(buttonId)?.remove();
 
       if (stateName === "playerTurn") {
         if (card_id && location_id) {
-          this.statusBar.addActionButton(_("Confirm"), () => {
-            this.actPlayCard(card_id, location_id);
-          });
+          this.statusBar.addActionButton(
+            _("Confirm"),
+            () => {
+              this.actPlayCard(card_id, location_id);
+            },
+            {
+              id: buttonId,
+            }
+          );
         }
         return;
       }
 
       if (location_id) {
-        this.statusBar.addActionButton(_("Confirm"), () => {
-          this.actMoveGranny(location_id);
-        });
+        this.statusBar.addActionButton(
+          _("Confirm"),
+          () => {
+            this.actMoveGranny(location_id);
+          },
+          { id: buttonId }
+        );
       }
     },
 
@@ -393,6 +413,10 @@ define([
 
     actSkipGrannyMove: function () {
       this.performAction("actSkipGrannyMove");
+    },
+
+    actUndoSkipGrannyMove: function () {
+      this.performAction("actUndoSkipGrannyMove");
     },
 
     actPlayCard: function (card_id, location_id) {
@@ -486,9 +510,9 @@ define([
               args[key] = `<span style="font-weight: bold">${label}</span>`;
             });
 
-            if (args.value) {
-              args.value = `<span style="font-weight: bold">${args.value}</span>`;
-            }
+          if (args.value) {
+            args.value = `<span style="font-weight: bold">${args.value}</span>`;
+          }
         }
       } catch (e) {
         console.error(log, args, "Exception thrown", e.stack);

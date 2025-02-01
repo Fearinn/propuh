@@ -59,8 +59,9 @@ $machinestates = [
         "args" => "arg_playerTurn",
         "possibleactions" => [
             "actPlayCard",
+            "actUndoSkipGrannyMove"
         ],
-        "transitions" => ["nextPlayer" => ST_BETWEEN_PLAYERS],
+        "transitions" => ["nextPlayer" => ST_BETWEEN_PLAYERS, "undo" => ST_GRANNY_MOVE],
         "updateGameProgression" => true,
     ],
 

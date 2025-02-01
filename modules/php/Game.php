@@ -281,6 +281,14 @@ class Game extends \Table
         $this->gamestate->nextState("skip");
     }
 
+    public function actUndoSkipGrannyMove(): void {
+        if ($this->globals->get(PLAY_COUNT) > 0) {
+            throw new \BgaVisibleSystemException("You may no longer move the Granny");
+        }
+
+        $this->gamestate->nextState("undo");
+    }
+
     public function actPlayCard(#[IntParam(min: 1, max: 28)] int $card_id, #[IntParam(min: 1, max: 3)] int $location_id): void
     {
         $player_id = (int) $this->getActivePlayerId();
@@ -303,7 +311,7 @@ class Game extends \Table
         // Get some values from the current game situation from the database.
 
         return [
-            "grannyLocation" => $this->globals->get(GRANNY_LOCATION, 2),
+            "canUndo" => $this->globals->get(PLAY_COUNT) === 0,
         ];
     }
 
