@@ -319,9 +319,8 @@ class Game extends \Table
      */
     public function getGameProgression()
     {
-        // TODO: compute and return the game progression
-
-        return 0;
+        $progression = $this->cards->countCardsInLocation("discard") / 28 * 100;
+        return round($progression);
     }
 
     /**

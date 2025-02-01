@@ -48,6 +48,7 @@ $machinestates = [
             "actSkipGrannyMove",
         ],
         "transitions" => ["playerTurn" => ST_PLAYER_TURN, "skip" => ST_PLAYER_TURN],
+        "updateGameProgression" => true,
     ],
 
     ST_PLAYER_TURN => [
@@ -60,6 +61,7 @@ $machinestates = [
             "actPlayCard",
         ],
         "transitions" => ["nextPlayer" => ST_BETWEEN_PLAYERS],
+        "updateGameProgression" => true,
     ],
 
     ST_BETWEEN_PLAYERS => [
