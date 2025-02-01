@@ -32,6 +32,7 @@ const ATTACK_CARD = "attackCard";
 const RESOLVE_TRICK = "resolveTrick";
 const PLAY_COUNT = "playCount";
 const GRANNY_LOCATION = "grannyLocation";
+const COMPLETED_GOALS = "completedGoals";
 
 class Game extends \Table
 {
@@ -107,7 +108,8 @@ class Game extends \Table
         return $hiddenCards;
     }
 
-    public function countPlacedTokens(int $location_id, string $player_role): int {
+    public function countPlacedTokens(int $location_id, string $player_role): int
+    {
         return count($this->tokens->getCardsOfTypeInLocation($player_role, null, $location_id));
     }
 
@@ -169,7 +171,7 @@ class Game extends \Table
             );
         }
 
-        $msg = !!$cards ? clienttranslate("New round: Each player draws 2 cards from the deck") : clienttranslate("New round: no cards in the deck");
+        $msg = !!$cards ? clienttranslate("New round: each player draws 2 cards from the deck") : clienttranslate("New round: no cards in the deck");
 
         $this->notify->all(
             "newRound",
@@ -180,35 +182,53 @@ class Game extends \Table
         );
     }
 
-    public function checkGoals(bool $silent): bool {
+    public function checkGoals(): bool
+    {
         $players = $this->loadPlayersBasicInfos();
+        $completedGoals = $this->globals->get(COMPLETED_GOALS);
 
         $winner_id = null;
         foreach ($players as $player_id => $player) {
             $player_role = $this->playerRole($player_id);
             $goals = $this->ROLES[$player_role]["goals"];
-
             $goalsMet = true;
+
             foreach ($goals as $location_id => $goal) {
                 $tokenGoal = $goal["tokens"];
                 $tokenCount = $this->countPlacedTokens($location_id, $player_role);
 
                 if ($tokenCount < $tokenGoal) {
                     $goalsMet = false;
+                    $this->notify->all(
+                        "incompleteGoal",
+                        "",
+                        [
+                            "player_id" => $player_id,
+                            "location_id" => $location_id
+                        ]
+                    );
                     continue;
                 }
 
-                if (!$silent) {
+                if (!$completedGoals[$player_role][$location_id]) {
                     $this->notify->all(
                         "completeGoal",
                         clienttranslate('${player_name} (${role_label}) ${goal_label}'),
                         [
                             "player_id" => $player_id,
+                            "location_id" => $location_id,
                             "goal_label" => $goal["label"],
                             "i18n" => ["role_label", "goal_label"],
                         ]
                     );
+
+                    $completedGoals[$player_role][$location_id] = true;
+                    $this->globals->set(COMPLETED_GOALS, $completedGoals);
                 }
+            }
+
+            if ($player_role === GRANNY && $this->countPlacedTokens(2, PROPUH) > 0) {
+                $goalsMet = false;
             }
 
             if ($goalsMet) {
@@ -220,7 +240,12 @@ class Game extends \Table
             }
         }
 
-        return !!$winner_id;
+        if ($winner_id) {
+            $this->DbQuery("UPDATE player SET player_score=1 WHERE player_id=$winner_id");
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -368,8 +393,13 @@ class Game extends \Table
         $this->globals->set(PLAY_COUNT, 0);
 
         $this->discardToken();
-        $this->drawCards();
 
+        if ($this->checkGoals()) {
+            $this->gamestate->nextState("gameEnd");
+            return;
+        };
+
+        $this->drawCards();
         $this->gamestate->nextState("nextRound");
     }
 
@@ -481,6 +511,7 @@ class Game extends \Table
         $this->cards->createCards($cards, "deck");
         $this->cards->shuffle("deck");
 
+        $completedGoals = [];
         foreach ($players as $player_id => $player) {
             $this->cards->pickCards(4, "deck", $player_id);
 
@@ -490,8 +521,11 @@ class Game extends \Table
                 "hand",
                 $player_id
             );
+
+            $completedGoals[$player_role] = [1 => false, 2 => false, 3 => false];
         }
 
+        $this->globals->set(COMPLETED_GOALS, $completedGoals);
         $this->globals->set(PLAY_COUNT, 0);
         $this->globals->set(GRANNY_LOCATION, 2);
 
@@ -541,7 +575,8 @@ class Game extends \Table
         throw new \feException("Zombie mode not supported at this game state: \"{$state_name}\".");
     }
 
-    public function debug_goals(): void {
-        $this->checkGoals(false);
+    public function debug_goals(): void
+    {
+        $this->checkGoals();
     }
 }

@@ -16,13 +16,13 @@
  */
 
 // define contants for state ids
-if (!defined('ST_END_GAME')) { // ensure this block is only invoked once, since it is included multiple times
+if (!defined('ST_GAME_END')) { // ensure this block is only invoked once, since it is included multiple times
     define("ST_GRANNY_MOVE", 2);
     define("ST_PLAYER_TURN", 3);
     define("ST_BETWEEN_PLAYERS", 4);
     define("ST_RESOLVE_TRICK", 5);
     define("ST_BETWEEN_ROUNDS", 6);
-    define("ST_END_GAME", 99);
+    define("ST_GAME_END", 99);
 }
 
 $machinestates = [
@@ -89,12 +89,12 @@ $machinestates = [
         "descriptionmyturn" => clienttranslate("Finishing round..."),
         "type" => "game",
         "action" => "st_betweenRounds",
-        "transitions" => ["nextRound" => ST_GRANNY_MOVE],
+        "transitions" => ["nextRound" => ST_GRANNY_MOVE, "gameEnd" => ST_GAME_END],
     ],
 
     // Final state.
     // Please do not modify (and do not overload action/args methods).
-    ST_END_GAME => [
+    ST_GAME_END => [
         "name" => "gameEnd",
         "description" => clienttranslate("End of game"),
         "type" => "manager",
