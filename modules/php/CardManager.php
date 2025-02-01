@@ -109,6 +109,17 @@ class CardManager
 
             if ($this->weight() >= $otherCard->weight()) {
                 $this->game->placeToken($location_id, $this->player_id);
+            } else {
+                $this->game->notify->all(
+                    "message",
+                    clienttranslate('${player_name} (${role_label}) successfully counters ${player_name2}'),
+                    [
+                        "player_id" => $otherCard->player_id,
+                        "player_id2" => $this->player_id,
+                        "player_name2" => $this->game->getPlayerNameById($this->player_id),
+                        "i18n" => ["role_label"],
+                    ]
+                );
             }
 
             return;
