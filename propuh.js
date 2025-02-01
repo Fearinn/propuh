@@ -468,5 +468,33 @@ define([
       const token = args.token;
       this.pph.stocks.tokens.discard.addCard(token);
     },
+
+    //  @Override
+
+    format_string_recursive(log, args) {
+      try {
+        if (log && args && !args.processed) {
+          args.processed = true;
+
+          const argsKeys = Object.keys(args);
+          argsKeys
+            .filter((key) => {
+              return key.includes("_label");
+            })
+            .forEach((key) => {
+              const label = args[key] === "Propuh" ? "Propuh" : _(args[key]);
+              args[key] = `<span style="font-weight: bold">${label}</span>`;
+            });
+
+            if (args.value) {
+              args.value = `<span style="font-weight: bold">${args.value}</span>`;
+            }
+        }
+      } catch (e) {
+        console.error(log, args, "Exception thrown", e.stack);
+      }
+
+      return this.inherited(arguments);
+    },
   });
 });
