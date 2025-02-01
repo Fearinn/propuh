@@ -3,7 +3,7 @@
 $this->LOCATIONS = [
     1 => [
         "name" => "table",
-        "label" => _("table"),
+        "label" => _("Table"),
         "limits" => [
             "granny" => 2,
             "propuh" => 3,
@@ -11,7 +11,7 @@ $this->LOCATIONS = [
     ],
     2 => [
         "name" => "stove",
-        "label" => _("stove"),
+        "label" => _("Stove"),
         "limits" => [
             "granny" => 3,
             "propuh" => 1,
@@ -19,7 +19,7 @@ $this->LOCATIONS = [
     ],
     3 => [
         "name" => "bed",
-        "label" => _("bed"),
+        "label" => _("Bed"),
         "limits" => [
             "granny" => 2,
             "propuh" => 3,

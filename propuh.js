@@ -33,7 +33,12 @@ define([
 
       this.pph = {
         managers: {},
-        info: {},
+        info: {
+          roles: {
+            granny: _("Granny"),
+            propuh: "Propuh",
+          },
+        },
         stocks: {
           trick: {},
           tokens: {},
@@ -80,6 +85,14 @@ define([
           element.classList.add("pph_token");
           const player_role = card.type;
           element.dataset.role = player_role;
+
+          const tooltip = this.format_string_recursive(
+            _("${role_label} token"),
+            {
+              role_label: this.pph.info.roles[player_role],
+            }
+          );
+          this.addTooltip(element.id, tooltip, "");
         },
         setupFrontDiv: (card, element) => {},
         setupBackDiv: (card, element) => {},
@@ -93,6 +106,17 @@ define([
         setupFrontDiv: (card, element) => {},
         setupBackDiv: (card, element) => {},
       });
+
+      // LOCATIONS
+
+      this.addTooltip("pph_table", _("Table"), "");
+      this.addTooltip("pph_locationTable", _("Table"), "");
+      this.addTooltip("pph_stove", _("Stove"), "");
+      this.addTooltip("pph_locationStove", _("Stove"), "");
+      this.addTooltip("pph_bed", _("Bed"), "");
+      this.addTooltip("pph_locationBed", _("Bed"), "");
+
+      // CARDS
 
       this.pph.stocks.trick.deck = new Deck(
         this.pph.managers.trick,
@@ -231,6 +255,8 @@ define([
           "beforeend",
           `<div id="pph_panelToken-${player_id}" class="pph_token" data-role=${player_role}></div>`
         );
+
+        this.addTooltip(`pph_panelToken-${player_id}`, this.pph.info.roles[player_role], "");
 
         playerPanel.insertAdjacentHTML(
           "beforeend",
