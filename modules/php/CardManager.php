@@ -118,13 +118,13 @@ class CardManager
 
         $otherCard_id = (int) $this->game->getUniqueValueFromDB("SELECT card_id FROM card WHERE card_location IN (1, 2, 3) AND card_id<>'$this->card_id'");
         $otherCard = new CardManager($otherCard_id, $this->game);
-        $this->game->globals->set(ATTACK_CARD, $otherCard_id);
 
         if ((int) $otherCard->location() === $location_id) {
             $this->discard();
 
             if ($this->weight() >= $otherCard->weight()) {
                 $this->game->placeToken($location_id, $this->player_id);
+                $this->game->globals->set(ATTACK_CARD, $otherCard_id);
             } else {
                 $this->game->notify->all(
                     "message",
@@ -136,6 +136,8 @@ class CardManager
                         "i18n" => ["role_label"],
                     ]
                 );
+
+                $otherCard->discard();
             }
 
             return;
