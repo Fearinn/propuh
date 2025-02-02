@@ -102,6 +102,10 @@ $this->ROLES = [
                 "tokens" => 3,
                 "label" => clienttranslate("cooks sarma"),
             ],
+            4 => [
+                "tokens" => 0,
+                "label" => clienttranslate("cleans the house"),
+            ],
             3 => [
                 "tokens" => 2,
                 "label" => clienttranslate("makes the bed"),

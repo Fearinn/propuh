@@ -194,9 +194,14 @@ class Game extends \Table
             $goals = $this->ROLES[$player_role]["goals"];
             $goalsMet = true;
 
-            foreach ($goals as $location_id => $goal) {
+            foreach ($goals as $goal_id => $goal) {
                 $tokenGoal = $goal["tokens"];
-                $tokenCount = $this->countPlacedTokens($location_id, $player_role);
+
+                if ($goal_id === 4) {
+                    $tokenCount = -$this->countPlacedTokens(2, PROPUH);
+                } else {
+                    $tokenCount = $this->countPlacedTokens($goal_id, $player_role);
+                }
 
                 if ($tokenCount < $tokenGoal) {
                     $goalsMet = false;
@@ -205,31 +210,27 @@ class Game extends \Table
                         "",
                         [
                             "player_id" => $player_id,
-                            "location_id" => $location_id
+                            "goal_id" => $goal_id
                         ]
                     );
                     continue;
                 }
 
-                if (!$completedGoals[$player_role][$location_id]) {
+                if (!$completedGoals[$player_role][$goal_id]) {
                     $this->notify->all(
                         "completeGoal",
-                        clienttranslate('${player_name} (${role_label}) ${goal_label}'),
+                        "",
                         [
                             "player_id" => $player_id,
-                            "location_id" => $location_id,
+                            "goal_id" => $goal_id,
                             "goal_label" => $goal["label"],
                             "i18n" => ["role_label", "goal_label"],
                         ]
                     );
 
-                    $completedGoals[$player_role][$location_id] = true;
+                    $completedGoals[$player_role][$goal_id] = true;
                     $this->globals->set(COMPLETED_GOALS, $completedGoals);
                 }
-            }
-
-            if ($player_role === GRANNY && $this->countPlacedTokens(2, PROPUH) > 0) {
-                $goalsMet = false;
             }
 
             if ($goalsMet) {
@@ -281,7 +282,8 @@ class Game extends \Table
         $this->gamestate->nextState("skip");
     }
 
-    public function actUndoSkipGrannyMove(): void {
+    public function actUndoSkipGrannyMove(): void
+    {
         if ($this->globals->get(PLAY_COUNT) > 0) {
             throw new \BgaVisibleSystemException("You may no longer move the Granny");
         }
@@ -466,6 +468,7 @@ class Game extends \Table
         $result["placedTokens"] = $this->getPlacedTokens(null);
         $result["deckCount"] = $this->cards->countCardsInLocation("deck");
         $result["grannyLocation"] = $this->globals->get(GRANNY_LOCATION);
+        $result["completedGoals"] = $this->globals->get(COMPLETED_GOALS);
 
         return $result;
     }
@@ -531,6 +534,10 @@ class Game extends \Table
             );
 
             $completedGoals[$player_role] = [1 => false, 2 => false, 3 => false];
+
+            if ($player_role === GRANNY) {
+                $completedGoals[$player_role][4] = true;
+            }
         }
 
         $this->globals->set(COMPLETED_GOALS, $completedGoals);

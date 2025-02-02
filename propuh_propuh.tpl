@@ -14,6 +14,26 @@
   <div id="pph_discard" class="pph_discard"></div>
   <div id="pph_boards" class="pph_boards">
     <div id="pph_deck" class="pph_deck"></div>
+    <div id="pph_goalsContainer" class="pph_goalsContainer whiteblock">
+      <ul id="pph_goals-granny" class="pph_goals">
+        <li>
+          <h4
+            id="pph_goalsTitle-granny"
+            class="pph_goalsTitle"
+            style="color: green"
+          ></h4>
+        </li>
+      </ul>
+      <ul id="pph_goals-propuh" class="pph_goals">
+        <li>
+          <h4
+            id="pph_goalsTitle-propuh"
+            class="pph_goalsTitle"
+            style="color: red"
+          ></h4>
+        </li>
+      </ul>
+    </div>
     <div id="pph_house" class="pph_house pph_board">
       <div
         id="pph_locationTable"

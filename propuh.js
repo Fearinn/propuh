@@ -38,6 +38,18 @@ define([
             granny: _("Granny"),
             propuh: "Propuh",
           },
+          goals: {
+            granny: {
+              1: _("Set the table"),
+              2: _("Cook sarm"),
+              4: _("Clean the house"),
+              3: _("Make the bed"),
+            },
+            propuh: {
+              1: _("Open the door"),
+              3: _("Open the window"),
+            },
+          },
         },
         stocks: {
           trick: {},
@@ -106,6 +118,32 @@ define([
         setupFrontDiv: (card, element) => {},
         setupBackDiv: (card, element) => {},
       });
+
+      // GOALS
+
+      for (const role in this.pph.info.goals) {
+        const goals = this.pph.info.goals[role];
+        const role_label = this.pph.info.roles[role];
+        const goalsElement = document.getElementById(`pph_goals-${role}`);
+
+        document.getElementById(`pph_goalsTitle-${role}`).innerHTML =
+          this.format_string_recursive(_("${role_label} goals:"), {
+            role_label,
+          });
+
+        for (const goal_id in goals) {
+          const goal = goals[goal_id];
+          goalsElement.insertAdjacentHTML(
+            "beforeend",
+            `<li id=pph_goal-${role}-${goal_id} class="pph_goal">${goal}</li>`
+          );
+
+          console.log(gamedatas.completedGoals, "GOALS");
+          if (gamedatas.completedGoals[role][goal_id]) {
+            document.getElementById(`pph_goal-${role}-${goal_id}`).classList.add("pph_completed");
+          }
+        }
+      }
 
       // LOCATIONS
 
@@ -256,7 +294,11 @@ define([
           `<div id="pph_panelToken-${player_id}" class="pph_token" data-role=${player_role}></div>`
         );
 
-        this.addTooltip(`pph_panelToken-${player_id}`, this.pph.info.roles[player_role], "");
+        this.addTooltip(
+          `pph_panelToken-${player_id}`,
+          this.pph.info.roles[player_role],
+          ""
+        );
 
         playerPanel.insertAdjacentHTML(
           "beforeend",
@@ -517,6 +559,18 @@ define([
     notif_discardToken: async function (args) {
       const token = args.token;
       this.pph.stocks.tokens.discard.addCard(token);
+    },
+
+    notif_completeGoal: async function (args) {
+      const goal_id = args.goal_id;
+      const player_role = args.player_role;
+      document.getElementById(`pph_goal-${player_role}-${goal_id}`).classList.add("pph_completed");
+    },
+
+    notif_incompleteGoal: async function (args) {
+      const goal_id = args.goal_id;
+      const player_role = args.player_role;
+      document.getElementById(`pph_goal-${player_role}-${goal_id}`).classList.remove("pph_completed");
     },
 
     //  @Override

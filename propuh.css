@@ -335,10 +335,18 @@ html {
   gap: 8px;
   width: 100%;
 }
+.pph_gameArea h4 {
+  margin: 0;
+}
+.pph_gameArea .whiteblock {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 .pph_boards {
   display: grid;
-  grid-template-areas: "c f ." "g e h";
+  grid-template-areas: "c f i" "g e h";
   align-items: center;
   justify-content: center;
   justify-items: center;
@@ -487,4 +495,31 @@ html {
   transform: unset !important;
   border: 3px solid blue;
   z-index: 1;
+}
+
+.pph_goalsContainer {
+  grid-area: i;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 4px !important;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+}
+.pph_goalsContainer .pph_goals {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pph_goalsContainer .pph_goal::after {
+  content: "❌";
+  color: red;
+  margin-left: 4px;
+}
+.pph_goalsContainer .pph_goal.pph_completed::after {
+  font-weight: bold;
+  content: "✓";
+  color: green;
 }
