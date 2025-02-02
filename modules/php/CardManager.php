@@ -109,42 +109,44 @@ class CardManager
     public function resolve($lastCard = false): void
     {
         $location_id = (int) $this->location();
+        $this->discard();
 
         if ($lastCard) {
-            $this->discard();
             $this->game->placeToken($location_id, $this->player_id);
             return;
         }
 
-        $otherCard_id = (int) $this->game->getUniqueValueFromDB("SELECT card_id FROM card WHERE card_location IN (1, 2, 3) AND card_id<>'$this->card_id'");
-        $otherCard = new CardManager($otherCard_id, $this->game);
+        $counterCard_id = (int) $this->game->getUniqueValueFromDb("SELECT card_id FROM card WHERE card_location IN (1, 2, 3) AND card_id<>'$this->card_id'");
 
-        if ((int) $otherCard->location() === $location_id) {
-            $this->discard();
+        if ($counterCard_id) {
+            $counterCard = new CardManager($counterCard_id, $this->game);
 
-            if ($this->weight() >= $otherCard->weight()) {
-                $this->game->placeToken($location_id, $this->player_id);
-                $this->game->globals->set(ATTACK_CARD, $otherCard_id);
-            } else {
-                $this->game->notify->all(
-                    "message",
-                    clienttranslate('${player_name} (${role_label}) successfully counters ${player_name2}'),
-                    [
-                        "player_id" => $otherCard->player_id,
-                        "player_id2" => $this->player_id,
-                        "player_name2" => $this->game->getPlayerNameById($this->player_id),
-                        "i18n" => ["role_label"],
-                    ]
-                );
+            if ((int) $counterCard->location() === $location_id) {
+                if ($this->weight() >= $counterCard->weight()) {
+                    $this->game->placeToken($location_id, $this->player_id);
+                    $this->game->globals->set(ATTACK_CARD, $counterCard_id);
+                } else {
+                    $this->game->notify->all(
+                        "message",
+                        clienttranslate('${player_name} (${role_label}) successfully counters ${player_name2}'),
+                        [
+                            "player_id" => $counterCard->player_id,
+                            "player_id2" => $this->player_id,
+                            "player_name2" => $this->game->getPlayerNameById($this->player_id),
+                            "i18n" => ["role_label"],
+                        ]
+                    );
 
-                $otherCard->discard();
+                    $counterCard->discard();
+                    $this->game->globals->set(ATTACK_CARD, null);
+                }
+
+                return;
             }
-
-            return;
         }
 
-        $this->discard();
         $this->game->placeToken($location_id, $this->player_id);
+        $this->game->globals->set(ATTACK_CARD, $counterCard_id);
     }
 
     public function discard(): void

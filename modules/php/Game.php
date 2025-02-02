@@ -223,8 +223,6 @@ class Game extends \Table
                         [
                             "player_id" => $player_id,
                             "goal_id" => $goal_id,
-                            "goal_label" => $goal["label"],
-                            "i18n" => ["role_label", "goal_label"],
                         ]
                     );
 
