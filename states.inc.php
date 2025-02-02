@@ -39,8 +39,8 @@ $machinestates = [
 
     ST_GRANNY_MOVE => [
         "name" => "grannyMove",
-        "description" => clienttranslate('${actplayer} may move the Granny standee to a new location'),
-        "descriptionmyturn" => clienttranslate('${you} may move the Granny standee to a new location'),
+        "description" => clienttranslate('${actplayer} may move the Granny Standee to a new location'),
+        "descriptionmyturn" => clienttranslate('${you} may move the Granny Standee to a new location'),
         "type" => "activeplayer",
         "args" => "arg_grannyMove",
         "possibleactions" => [

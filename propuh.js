@@ -302,7 +302,7 @@ define([
           const canUndo = args.args.canUndo;
           if (canUndo) {
             this.statusBar.addActionButton(
-              _("Move the standee"),
+              _("Change mind (Standee)"),
               () => {
                 this.actUndoSkipGrannyMove();
               },

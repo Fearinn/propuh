@@ -32,6 +32,7 @@ const ATTACK_CARD = "attackCard";
 const RESOLVE_TRICK = "resolveTrick";
 const PLAY_COUNT = "playCount";
 const GRANNY_LOCATION = "grannyLocation";
+const MOVED_GRANNY = "movedGranny";
 const COMPLETED_GOALS = "completedGoals";
 
 class Game extends \Table
@@ -261,15 +262,14 @@ class Game extends \Table
         $player_id = (int) $this->getActivePlayerId();
 
         $this->globals->set(GRANNY_LOCATION, $location_id);
+        $this->globals->set(MOVED_GRANNY, true);
 
         $this->notify->all(
             "moveGranny",
-            clienttranslate('${player_name} (${role_label}) moves the standee to the ${location_label}'),
+            "",
             [
                 "player_id" => $player_id,
                 "location_id" => $location_id,
-                "location_label" => $this->LOCATIONS[$location_id]["label"],
-                "i18n" => ["role_label", "location_label"],
             ]
         );
 
@@ -398,6 +398,7 @@ class Game extends \Table
         $this->globals->set(ATTACK_CARD, null);
         $this->globals->set(RESOLVE_TRICK, false);
         $this->globals->set(PLAY_COUNT, 0);
+        $this->globals->set(MOVED_GRANNY, false);
 
         $this->discardToken();
 

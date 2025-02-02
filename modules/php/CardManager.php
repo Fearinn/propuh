@@ -3,6 +3,8 @@
 namespace Bga\Games\Propuh;
 
 use const Bga\Games\propuh\ATTACK_CARD;
+use const Bga\Games\propuh\GRANNY_LOCATION;
+use const Bga\Games\propuh\MOVED_GRANNY;
 use const Bga\Games\propuh\PLAY_COUNT;
 
 class CardManager
@@ -48,6 +50,21 @@ class CardManager
     {
         $this->validateLocation($player_id);
 
+        if ($this->game->globals->get(PLAY_COUNT) === 0 && $this->game->globals->get(MOVED_GRANNY, false)) {
+            $grannyLocation = $this->game->globals->get(GRANNY_LOCATION);
+
+            $this->game->notify->all(
+                "message",
+                clienttranslate('${player_name} (${role_label}) moves the Standee to the ${location_label}'),
+                [
+                    "player_id" => $player_id,
+                    "location_id" => $grannyLocation,
+                    "location_label" => $this->LOCATIONS[$grannyLocation]["label"],
+                    "i18n" => ["role_label", "location_label"],
+                ]
+            );
+        }
+
         $location = $this->LOCATIONS[$location_id];
         $location_label = $location["label"];
         $this->game->cards->moveCard($this->card_id, $location_id, $player_id);
@@ -68,7 +85,6 @@ class CardManager
         if (!$this->game->globals->get(ATTACK_CARD)) {
             $this->game->globals->set(ATTACK_CARD, $this->card_id);
         }
-
 
         $this->game->globals->inc(PLAY_COUNT, 1);
     }
