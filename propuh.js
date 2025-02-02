@@ -138,7 +138,6 @@ define([
             `<li id=pph_goal-${role}-${goal_id} class="pph_goal">${goal}</li>`
           );
 
-          console.log(gamedatas.completedGoals, "GOALS");
           if (gamedatas.completedGoals[role][goal_id]) {
             document.getElementById(`pph_goal-${role}-${goal_id}`).classList.add("pph_completed");
           }

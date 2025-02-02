@@ -205,14 +205,21 @@ class Game extends \Table
 
                 if ($tokenCount < $tokenGoal) {
                     $goalsMet = false;
-                    $this->notify->all(
-                        "incompleteGoal",
-                        "",
-                        [
-                            "player_id" => $player_id,
-                            "goal_id" => $goal_id
-                        ]
-                    );
+
+                    if ($completedGoals[$player_role][$goal_id]) {
+                        $this->notify->all(
+                            "incompleteGoal",
+                            "",
+                            [
+                                "player_id" => $player_id,
+                                "goal_id" => $goal_id,
+                                "player_role" => $player_role,
+                            ]
+                        );
+
+                        $completedGoals[$player_role][$goal_id] = false;
+                        $this->globals->set(COMPLETED_GOALS, $completedGoals);
+                    }
                     continue;
                 }
 
@@ -223,6 +230,7 @@ class Game extends \Table
                         [
                             "player_id" => $player_id,
                             "goal_id" => $goal_id,
+                            "player_role" => $player_role,
                         ]
                     );
 
