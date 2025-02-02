@@ -114,6 +114,7 @@ define([
         getId: (card) => `granny-${card.id}`,
         setupDiv: (card, element) => {
           element.classList.add("pph_granny");
+          this.addTooltip(element.id, _("Granny Standee"), "");
         },
         setupFrontDiv: (card, element) => {},
         setupBackDiv: (card, element) => {},

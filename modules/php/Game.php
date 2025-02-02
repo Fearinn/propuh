@@ -130,6 +130,11 @@ class Game extends \Table
         return (int) $this->getUniqueValueFromDB("SELECT player_id FROM player WHERE player_role='granny'");
     }
 
+    public function propuhId(): int
+    {
+        return (int) $this->getUniqueValueFromDB("SELECT player_id FROM player WHERE player_role='propuh'");
+    }
+
     public function placeToken(int $location_id, int $player_id)
     {
         $tokenCard_id = (int) $this->getUniqueValueFromDB("SELECT card_id FROM token WHERE card_location='hand' AND card_location_arg=$player_id LIMIT 1");
@@ -250,6 +255,12 @@ class Game extends \Table
 
         if ($winner_id) {
             $this->DbQuery("UPDATE player SET player_score=1 WHERE player_id=$winner_id");
+            return true;
+        }
+
+        if ($this->cards->countCardsInLocation("discard") === 28) {
+            $propuh_id = $this->propuhId();
+            $this->DbQuery("UPDATE player SET player_score=1 WHERE player_id=$propuh_id");
             return true;
         }
 
