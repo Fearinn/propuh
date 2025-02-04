@@ -97,6 +97,11 @@ html {
       border: 4px solid blue;
     }
 
+    &-unselectable {
+      cursor: not-allowed;
+      opacity: 0.75;
+    }
+
     &Cards {
       position: absolute;
       left: 50%;

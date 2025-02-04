@@ -483,6 +483,10 @@ html {
 .pph_boards .pph_board-selected {
   border: 4px solid blue;
 }
+.pph_boards .pph_board-unselectable {
+  cursor: not-allowed;
+  opacity: 0.75;
+}
 .pph_boards .pph_boardCards {
   position: absolute;
   left: 50%;

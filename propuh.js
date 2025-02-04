@@ -416,9 +416,11 @@ define([
       boardElements.forEach((boardElement) => {
         const location_id = boardElement.dataset.board;
         if (location_id == grannyLocation) {
+          boardElement.classList.add("pph_board-unselectable");
           return;
         }
 
+        boardElement.classList.remove("pph_board-unselectable");
         boardElement.classList.add("pph_board-selectable");
 
         boardElement.onclick = () => {
