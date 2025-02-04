@@ -71,7 +71,7 @@ class Game extends \Table
             }
 
             if (!isset($args["role_label"]) && str_contains($message, '${role_label}')) {
-                $player_role = $this->playerRole($player_id);
+                $player_role = $this->getPlayerRole($player_id);
                 $args["role_label"] = $this->ROLES[$player_role]["label"];
             }
         }
@@ -120,7 +120,7 @@ class Game extends \Table
         return array_values($placedTokens);
     }
 
-    public function playerRole(int $player_id): string
+    public function getPlayerRole(int $player_id): string
     {
         return $this->getUniqueValueFromDB("SELECT player_role FROM player WHERE player_id=$player_id");
     }
@@ -195,7 +195,7 @@ class Game extends \Table
 
         $winner_id = null;
         foreach ($players as $player_id => $player) {
-            $player_role = $this->playerRole($player_id);
+            $player_role = $this->getPlayerRole($player_id);
             $goals = $this->ROLES[$player_role]["goals"];
             $goalsMet = true;
 
@@ -480,6 +480,7 @@ class Game extends \Table
         $result["players"] = $this->getCollectionFromDb(
             "SELECT player_id id, player_score score, player_role role FROM player"
         );
+        $result["player_role"] = $this->getPlayerRole($current_player_id);
         $result["hand"] = $this->getHand($current_player_id, false);
         $result["playedCards"] = $this->getPlayedCards(null);
         $result["placedTokens"] = $this->getPlacedTokens(null);
@@ -543,7 +544,7 @@ class Game extends \Table
         foreach ($players as $player_id => $player) {
             $this->cards->pickCards(4, "deck", $player_id);
 
-            $player_role = $this->playerRole($player_id);
+            $player_role = $this->getPlayerRole($player_id);
             $this->tokens->createCards(
                 [["type_arg" => $player_id, "type" => $player_role, "nbr" => 7]],
                 "hand",

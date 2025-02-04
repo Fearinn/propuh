@@ -22,6 +22,7 @@ define([
   "ebg/counter",
   `${g_gamethemeurl}modules/js/bga-zoom.js`,
   `${g_gamethemeurl}modules/js/bga-cards.js`,
+  `${g_gamethemeurl}modules/js/bga-help.js`,
 ], function (dojo, declare) {
   return declare("bgagame.propuh", ebg.core.gamegui, {
     constructor: function () {
@@ -62,6 +63,21 @@ define([
         card_id: null,
         location_id: null,
       };
+
+      this.pph.managers.help = new HelpManager(this, {
+        buttons: [
+          new BgaHelpExpandableButton({
+            title: _("Player Aid"),
+            expandedWidth: "450px",
+            expandedHeight: "315px",
+            foldedHtml: `<span class="pph_helpFolded">?</span>`,
+            unfoldedHtml: `<div id="pph_aidContainer" class="pph_aidContainer">
+              <div class="pph_aidCard" style="background-image: url(${g_gamethemeurl}/img/aid/turnAid.jpg)"></div>
+              <div class="pph_aidCard" style="background-image: url(${g_gamethemeurl}/img/aid/${gamedatas.player_role}Aid.jpg)"></div>
+            </div>`,
+          }),
+        ],
+      });
 
       this.pph.managers.zoom = new ZoomManager({
         element: document.getElementById("pph_gameArea"),
@@ -128,7 +144,7 @@ define([
         const goalsElement = document.getElementById(`pph_goals-${role}`);
 
         document.getElementById(`pph_goalsTitle-${role}`).innerHTML =
-          this.format_string_recursive(_("${role_label} goals:"), {
+          this.format_string_recursive(_("${role_label}&apos;s goals:"), {
             role_label,
           });
 

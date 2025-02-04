@@ -12,6 +12,7 @@
  * propuh stylesheet
  *
  */
+@use "bga-help";
 @use "bga-zoom";
 @use "bga-cards";
 
@@ -44,6 +45,25 @@ html {
     margin: 0;
     padding: 0;
   }
+}
+
+.pph_helpFolded {
+  font-size: 32px;
+  font-weight: bold;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.pph_aidContainer {
+  display: flex;
+}
+
+.pph_aidCard {
+  background-size: 100% 100%;
+  height: calc(var(--cardHeight) * 1.5);
+  width: calc(var(--cardWidth) * 1.5);
 }
 
 .pph_boards {
