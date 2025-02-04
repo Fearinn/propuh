@@ -18,8 +18,8 @@
 html {
   --cardWidth: 150px;
   --cardHeight: 209.6px;
-  --locationWidth: 386.9px;
-  --locationHeight: 240px;
+  --boardWidth: 386.9px;
+  --boardHeight: 240px;
   --houseHeight: 581.2px;
   --tokenHeight: 50px;
   --tokenWidth: 50px;
@@ -65,8 +65,8 @@ html {
   .pph_board {
     position: relative;
     background-size: 100% 100%;
-    height: var(--locationWidth);
-    width: var(--locationHeight);
+    height: var(--boardHeight);
+    width: var(--boardWidth);
     box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5);
 
     &-selectable {
@@ -80,14 +80,14 @@ html {
     &Cards {
       position: absolute;
       left: 50%;
-      top: 20%;
-      transform: translateX(-50%);
+      top: 50%;
+      transform: translateY(-50%) translateX(-50%);
     }
 
     &Tokens {
       position: absolute;
-      right: 0;
-      bottom: 1%;
+      right: 1%;
+      bottom: 5%;
       display: flex;
       justify-content: center;
 
@@ -108,7 +108,7 @@ html {
     grid-area: e;
     background-image: url("img/house.jpg");
     height: var(--houseHeight);
-    width: var(--locationWidth);
+    width: var(--boardWidth);
   }
 
   .pph_location {
@@ -135,16 +135,6 @@ html {
   .pph_stove {
     grid-area: f;
     background-image: url("img/stove.jpg");
-    height: var(--locationHeight);
-    width: var(--locationWidth);
-
-    .pph_boardCards {
-      top: 5%;
-    }
-
-    .pph_boardTokens {
-      bottom: 5%;
-    }
   }
 
   .pph_table {
@@ -223,15 +213,15 @@ html {
 }
 
 .pph_goalsContainer {
+  font-size: 20px;
   grid-area: i;
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
   gap: 16px;
   margin: 0;
   padding: 4px !important;
-  height: 100%;
-  width: 100%;
-  overflow-y: auto;
+  max-height: var(--boardHeight);
 
   .pph_goals {
     display: flex;
