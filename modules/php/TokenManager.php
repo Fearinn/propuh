@@ -39,6 +39,8 @@ class TokenManager
     {
         $this->validateLocation($player_id);
 
+        $this->game->incStat(1, "tokensPlaced", $player_id);
+
         $location = (array) $this->LOCATIONS[$location_id];
         $location_label = (string) $location["label"];
 
@@ -75,6 +77,8 @@ class TokenManager
 
     public function discard(int $location_id, int $player_id): void
     {
+        $this->game->incStat(1, "tokensRemoved", $player_id);
+
         $location = (array) $this->LOCATIONS[$location_id];
         $location_label = (string) $location["label"];
 
@@ -83,7 +87,7 @@ class TokenManager
 
         $this->game->notify->all(
             "discardToken",
-            clienttranslate('${player_name} (${role_label}) discards an opponent&apos;s token from the ${location_label}'),
+            clienttranslate('${player_name} (${role_label}) removes an opponent&apos;s token from the ${location_label}'),
             [
                 "player_id" => $player_id,
                 "token" => $this->getCard(),

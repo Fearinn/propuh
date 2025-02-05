@@ -1,1 +1,30 @@
-{}
+{
+  "player": {
+    "grannyWin%": {
+      "id": 10,
+      "name": "Win % as Granny",
+      "type": "int"
+    },
+    "propuhWin%": {
+      "id": 11,
+      "name": "Win % as Propuh",
+      "type": "int"
+    },
+    "successfulCounterplays": {
+      "id": 12,
+      "name": "Successful counterplays",
+      "type": "int"
+    },
+    "tokensPlaced": {
+      "id": 13,
+      "name": "Tokens placed",
+      "type": "int"
+    },
+    "tokensRemoved": {
+      "id": 14,
+      "name": "Tokens removed",
+      "type": "int"
+    }
+  },
+  "table": {}
+}

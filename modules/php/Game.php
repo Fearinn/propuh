@@ -253,14 +253,14 @@ class Game extends \Table
             }
         }
 
-        if ($winner_id) {
-            $this->DbQuery("UPDATE player SET player_score=1 WHERE player_id=$winner_id");
-            return true;
+        if (!$winner_id && $this->cards->countCardsInLocation("discard") === 28) {
+            $winner_id = $this->propuhId();
         }
 
-        if ($this->cards->countCardsInLocation("discard") === 28) {
-            $propuh_id = $this->propuhId();
-            $this->DbQuery("UPDATE player SET player_score=1 WHERE player_id=$propuh_id");
+        if ($winner_id) {
+            $player_role = $this->getPlayerRole($winner_id);
+            $this->setStat(100, "{$player_role}Win%", $winner_id);
+            $this->DbQuery("UPDATE player SET player_score=1 WHERE player_id=$winner_id");
             return true;
         }
 
@@ -556,16 +556,21 @@ class Game extends \Table
             if ($player_role === GRANNY) {
                 $completedGoals[$player_role][4] = true;
             }
+
+            $this->initStat("player", "{$player_role}Win%", 0, $player_id);
+            $this->initStat("player", "successfulCounterplays", 0, $player_id);
+            $this->initStat("player", "tokensPlaced", 0, $player_id);
         }
+
+        $granny_id = $this->grannyId();
+        $this->initStat("player", "tokensRemoved", 0, $granny_id);
 
         $this->globals->set(COMPLETED_GOALS, $completedGoals);
         $this->globals->set(PLAY_COUNT, 0);
         $this->globals->set(GRANNY_LOCATION, 2);
 
         $this->reloadPlayersBasicInfos();
-
-        $granny = $this->getUniqueValueFromDB("SELECT player_id FROM player WHERE player_role='granny'");
-        $this->gamestate->changeActivePlayer($granny);
+        $this->gamestate->changeActivePlayer($granny_id);
     }
 
     /**

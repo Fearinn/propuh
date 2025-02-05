@@ -126,6 +126,8 @@ class CardManager
                     $this->game->placeToken($location_id, $this->player_id);
                     $this->game->globals->set(ATTACK_CARD, $counterCard_id);
                 } else {
+                    $this->game->incStat(1, "successfulCounterplays", $counterCard->player_id);
+                    
                     $this->game->notify->all(
                         "message",
                         clienttranslate('${player_name} (${role_label}) successfully counters ${player_name2}'),
