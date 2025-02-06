@@ -131,8 +131,14 @@ class Game extends \Table
         return array_values($placedTokens);
     }
 
-    public function getPlayerRole(int $player_id): string
+    public function getPlayerRole(int $player_id): ?string
     {
+        $players = $this->loadPlayersBasicInfos();
+
+        if (!array_key_exists($player_id, $players)) {
+            return GRANNY;
+        }
+
         return $this->getUniqueValueFromDB("SELECT player_role FROM player WHERE player_id=$player_id");
     }
 
