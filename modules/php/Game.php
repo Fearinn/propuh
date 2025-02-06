@@ -156,6 +156,17 @@ class Game extends \Table
     {
         $tokenCard_id = (int) $this->getUniqueValueFromDB("SELECT card_id FROM token WHERE card_location='hand' AND card_location_arg=$player_id LIMIT 1");
 
+        if (!$tokenCard_id) {
+            $this->notify->all(
+                "message",
+                clienttranslate('${player_name} (${role_label}) may not place more tokens'),
+                [
+                    "player_id" => $player_id,
+                ]
+            );
+            return;
+        }
+
         $token = new TokenManager($tokenCard_id, $this);
         $token->place($location_id, $player_id);
     }
