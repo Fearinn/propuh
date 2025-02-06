@@ -39,7 +39,6 @@ class Game extends \Table
 {
     private array $CARDS;
     private array $ROLES;
-    private array $LOCATIONS;
     public string $deckFields = "card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg";
 
     public function __construct()
@@ -48,7 +47,9 @@ class Game extends \Table
 
         require "material.inc.php";
 
-        $this->initGameStateLabels([]);
+        $this->initGameStateLabels([
+            "soloDifficulty" => 100,
+        ]);
 
         $this->cards = $this->getNew("module.common.deck");
         $this->cards->init("card");
@@ -61,6 +62,16 @@ class Game extends \Table
 
 
     /*  UTILITY FUNCTIONS */
+
+    public function isSolo(): bool
+    {
+        return $this->getPlayersNumber() === 1;
+    }
+
+    public function soloDifficulty(): int
+    {
+        return (int) $this->getGameStateValue("soloDifficulty");
+    }
 
     public function decoratePlayerNameNotifArg(string $message, array $args): array
     {
@@ -375,8 +386,8 @@ class Game extends \Table
     public function st_betweenPlayers(): void
     {
         $player_id = (int)$this->getActivePlayerId();
-        $this->giveExtraTime($player_id);
 
+        $this->giveExtraTime($player_id);
         $this->activeNextPlayer();
 
         if ($this->globals->get(RESOLVE_TRICK)) {
@@ -386,6 +397,11 @@ class Game extends \Table
 
         if ($this->globals->get(ATTACK_CARD)) {
             $this->globals->set(RESOLVE_TRICK, true);
+        }
+
+        if ($this->isSolo()) {
+            $this->gamestate->nextState("propuhSolo");
+            return;
         }
 
         $this->gamestate->nextState("nextPlayer");
@@ -428,6 +444,11 @@ class Game extends \Table
 
         $this->drawCards();
         $this->gamestate->nextState("nextRound");
+    }
+
+    public function st_propuhSolo(): void
+    {
+        $this->gamestate->nextState("realPlayer");
     }
 
     /**
@@ -509,7 +530,10 @@ class Game extends \Table
     {
         $gameinfos = $this->getGameinfos();
         $default_colors = $gameinfos['player_colors'];
-        shuffle($default_colors);
+
+        if (count($players) > 1) {
+            shuffle($default_colors);
+        }
 
         foreach ($players as $player_id => $player) {
             $color = array_shift($default_colors);
@@ -540,7 +564,6 @@ class Game extends \Table
         $this->cards->createCards($cards, "deck");
         $this->cards->shuffle("deck");
 
-        $completedGoals = [];
         foreach ($players as $player_id => $player) {
             $this->cards->pickCards(4, "deck", $player_id);
 
@@ -551,19 +574,42 @@ class Game extends \Table
                 $player_id
             );
 
-            $completedGoals[$player_role] = [1 => false, 2 => false, 3 => false];
-
-            if ($player_role === GRANNY) {
-                $completedGoals[$player_role][4] = true;
-            }
-
             $this->initStat("player", "{$player_role}Win%", 0, $player_id);
             $this->initStat("player", "successfulCounterplays", 0, $player_id);
             $this->initStat("player", "tokensPlaced", 0, $player_id);
         }
 
+        $completedGoals = [];
+        foreach ($this->ROLES as $role => $role_info) {
+            $completedGoals[$role] = [1 => false, 3 => false];
+
+            if ($role === GRANNY) {
+                $completedGoals[$role][2] = false;
+                $completedGoals[$role][4] = true;
+            }
+        }
+
         $granny_id = $this->grannyId();
         $this->initStat("player", "tokensRemoved", 0, $granny_id);
+
+        if ($this->isSolo()) {
+            $this->tokens->createCards(
+                [["type_arg" => 1, "type" => PROPUH, "nbr" => 7]],
+                "solo",
+            );
+
+            $difficulty = $this->soloDifficulty();
+
+            if ($difficulty === 2) {
+                $this->tokens->pickCardForLocation("solo", 3);
+            }
+
+            if ($difficulty === 3) {
+                $this->tokens->pickCardForLocation("solo", 1);
+                $this->tokens->pickCardForLocation("solo", 2);
+                $this->tokens->pickCardForLocation("solo", 3);
+            }
+        }
 
         $this->globals->set(COMPLETED_GOALS, $completedGoals);
         $this->globals->set(PLAY_COUNT, 0);

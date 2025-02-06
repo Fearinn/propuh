@@ -1,1 +1,25 @@
-{}
+{
+  "100": {
+    "name": "Difficulty",
+    "values": {
+      "1": {
+        "name": "1",
+        "description": "No Propuh tokens at the start"
+      },
+      "2": {
+        "name": "2",
+        "description": "One Propuh token in the bed at the start"
+      },
+      "3": {
+        "name": "3",
+        "description": "One Propuh on each location at the start"
+      }
+    },
+    "displaycondition": [
+      {
+        "type": "maxplayers",
+        "value": 1
+      }
+    ]
+  }
+}

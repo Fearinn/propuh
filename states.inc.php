@@ -22,6 +22,7 @@ if (!defined('ST_GAME_END')) { // ensure this block is only invoked once, since 
     define("ST_BETWEEN_PLAYERS", 4);
     define("ST_RESOLVE_TRICK", 5);
     define("ST_BETWEEN_ROUNDS", 6);
+    define("ST_PROPUH_SOLO", 7);
     define("ST_GAME_END", 99);
 }
 
@@ -93,6 +94,15 @@ $machinestates = [
         "type" => "game",
         "action" => "st_betweenRounds",
         "transitions" => ["nextRound" => ST_GRANNY_MOVE, "gameEnd" => ST_GAME_END],
+    ],
+
+    ST_PROPUH_SOLO => [
+        "name" => "propuhSolo",
+        "description" => clienttranslate("Playing card for Propuh..."),
+        "descriptionmyturn" => clienttranslate("Playing card for Propuh..."),
+        "type" => "game",
+        "action" => "st_propuhSolo",
+        "transitions" => ["realPlayer" => ST_BETWEEN_PLAYERS],
     ],
 
     // Final state.
