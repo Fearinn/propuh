@@ -630,7 +630,10 @@ define([
             args.player_name = `<span class="playername" style="color: red;">${"Propuh"}</span>`;
             args.role_label = "";
             log = log.replace("(${role_label})", "");
-            console.log("log", log);
+          }
+
+          if (args.player_name2 && args.player_id2 == 1) {
+            args.player_name2 = `<span class="playername" style="color: red;">${"Propuh"}</span>`;
           }
         }
       } catch (e) {
