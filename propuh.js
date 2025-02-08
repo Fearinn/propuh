@@ -144,7 +144,7 @@ define([
         const goalsElement = document.getElementById(`pph_goals-${role}`);
 
         document.getElementById(`pph_goalsTitle-${role}`).innerHTML =
-          this.format_string_recursive(_("${role_label}&apos;s goals:"), {
+          this.format_string_recursive(_("${role_label}'s goals:"), {
             role_label,
           });
 
@@ -156,7 +156,9 @@ define([
           );
 
           if (gamedatas.completedGoals[role][goal_id]) {
-            document.getElementById(`pph_goal-${role}-${goal_id}`).classList.add("pph_completed");
+            document
+              .getElementById(`pph_goal-${role}-${goal_id}`)
+              .classList.add("pph_completed");
           }
         }
       }
@@ -531,8 +533,11 @@ define([
           player_id == this.player_id
             ? document.getElementById(`pph_voidHand-${player_id}`)
             : undefined,
+        fromStock: player_id == 1 ? this.pph.stocks.trick.deck : undefined,
       });
     },
+
+    notif_successfulCounterplay: async function (args) {},
 
     notif_discardCard: async function (args) {
       const card = args.card;
@@ -582,13 +587,17 @@ define([
     notif_completeGoal: async function (args) {
       const goal_id = args.goal_id;
       const player_role = args.player_role;
-      document.getElementById(`pph_goal-${player_role}-${goal_id}`).classList.add("pph_completed");
+      document
+        .getElementById(`pph_goal-${player_role}-${goal_id}`)
+        .classList.add("pph_completed");
     },
 
     notif_incompleteGoal: async function (args) {
       const goal_id = args.goal_id;
       const player_role = args.player_role;
-      document.getElementById(`pph_goal-${player_role}-${goal_id}`).classList.remove("pph_completed");
+      document
+        .getElementById(`pph_goal-${player_role}-${goal_id}`)
+        .classList.remove("pph_completed");
     },
 
     //  @Override
@@ -610,6 +619,13 @@ define([
 
           if (args.value) {
             args.value = `<span style="font-weight: bold">${args.value}</span>`;
+          }
+
+          if (args.player_name && args.player_id == 1) {
+            args.player_name = `<span class="playername" style="color: red;">${"Propuh"}</span>`;
+            args.role_label = "";
+            log = log.replace("(${role_label})", "");
+            console.log("log", log);
           }
         }
       } catch (e) {

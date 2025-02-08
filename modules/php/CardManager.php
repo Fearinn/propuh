@@ -41,6 +41,14 @@ class CardManager
     {
         $card = $this->getCard();
 
+        if ($player_id === 1) {
+            if ($card["location"] !== "deck") {
+                throw new \BgaVisibleSystemException("This card was not drawn from the deck");
+            }
+
+            return;
+        } 
+
         if ($card["location"] !== "hand" || (int) $card["location_arg"] !== $player_id) {
             throw new \BgaVisibleSystemException("This card is not in your hand");
         }
@@ -126,10 +134,10 @@ class CardManager
                     $this->game->placeToken($location_id, $this->player_id);
                     $this->game->globals->set(ATTACK_CARD, $counterCard_id);
                 } else {
-                    $this->game->incStat(1, "successfulCounterplays", $counterCard->player_id);
+                    $this->game->custom_incStat(1, "successfulCounterplays", $counterCard->player_id);
                     
                     $this->game->notify->all(
-                        "message",
+                        "successfulCounterplay",
                         clienttranslate('${player_name} (${role_label}) successfully counters ${player_name2}'),
                         [
                             "player_id" => $counterCard->player_id,

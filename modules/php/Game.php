@@ -73,12 +73,26 @@ class Game extends \Table
         return (int) $this->getGameStateValue("soloDifficulty");
     }
 
+    public function custom_incStat(int $inc, string $name, int $player_id)
+    {
+        if ($player_id !== 1) {
+            $this->incStat($inc, $name, $player_id);
+        }
+    }
+
+    public function custom_setStat(int $value, string $name, int $player_id)
+    {
+        if ($player_id !== 1) {
+            $this->setStat($value, $name, $player_id);
+        }
+    }
+
     public function decoratePlayerNameNotifArg(string $message, array $args): array
     {
         if (isset($args["player_id"])) {
             $player_id = (int) $args["player_id"];
             if (!isset($args["player_name"]) && str_contains($message, '${player_name}')) {
-                $args["player_name"] = $this->getPlayerNameById($player_id);
+                $args["player_name"] = $player_id === 1 ? "Propuh" : $this->getPlayerNameById($player_id);
             }
 
             if (!isset($args["role_label"]) && str_contains($message, '${role_label}')) {
@@ -135,6 +149,10 @@ class Game extends \Table
     {
         $players = $this->loadPlayersBasicInfos();
 
+        if ($player_id === 1) {
+            return PROPUH;
+        }
+
         if (!array_key_exists($player_id, $players)) {
             return GRANNY;
         }
@@ -188,7 +206,13 @@ class Game extends \Table
     {
         $players = $this->loadPlayersBasicInfos();
         $drawnCards = [];
+        $deckCount = $this->cards->countCardsInLocation("deck");
+
         foreach ($players as $player_id => $player) {
+            if ($deckCount <= 1) {
+                continue;
+            }
+
             $cards = $this->cards->pickCards(2, "deck", $player_id);
             $cards = array_values($cards);
 
@@ -205,7 +229,11 @@ class Game extends \Table
             );
         }
 
-        $msg = !!$cards ? clienttranslate("New round: each player draws 2 cards from the deck") : clienttranslate("New round: no cards in the deck");
+        $msg = $this->isSolo() ? clienttranslate("New round: the Granny draws 2 cards") : clienttranslate("New round: each player draws 2 cards from the deck");
+
+        if ($deckCount <= 1) {
+            $msg = clienttranslate("New round: can't deal cards");
+        }
 
         $this->notify->all(
             "newRound",
@@ -287,12 +315,45 @@ class Game extends \Table
 
         if ($winner_id) {
             $player_role = $this->getPlayerRole($winner_id);
-            $this->setStat(100, "{$player_role}Win%", $winner_id);
+            $this->custom_setStat(100, "{$player_role}Win%", $winner_id);
             $this->DbQuery("UPDATE player SET player_score=1 WHERE player_id=$winner_id");
             return true;
         }
 
         return false;
+    }
+
+    public function solo_playCard($card_id): void
+    {
+        $propuhCard = new CardManager($card_id, $this);
+        $location_id = $this->solo_defineLocation($propuhCard);
+        $propuhCard->play($location_id, 1);
+    }
+
+    public function solo_defineLocation(CardManager $propuhCard): int
+    {
+        $grannyCard_id = $this->globals->get(ATTACK_CARD);
+
+        if (!$grannyCard_id) {
+            return $propuhCard->suit_id;
+        }
+
+        $grannyCard = new CardManager($grannyCard_id, $this);
+
+        if ($propuhCard->weight() > $grannyCard->weight()) {
+            return (int) $grannyCard->location();
+        }
+
+        if ($grannyCard->location() !== $propuhCard->suit_id) {
+            return $propuhCard->suit_id;
+        }
+
+        $location_id = $grannyCard->location() + 1;
+        if ($location_id > 3) {
+            $location_id = 1;
+        }
+
+        return $location_id;
     }
 
     /**
@@ -417,7 +478,7 @@ class Game extends \Table
         }
 
         if ($this->isSolo()) {
-            $this->gamestate->nextState("propuhSolo");
+            $this->gamestate->nextState("soloTurn");
             return;
         }
 
@@ -442,6 +503,11 @@ class Game extends \Table
             return;
         }
 
+        if ($this->isSolo() && $this->globals->get(PLAY_COUNT) % 2 !== 0) {
+            $this->gamestate->nextState("soloTurn");
+            return;
+        }
+
         $this->gamestate->nextState("nextTrick");
     }
 
@@ -463,8 +529,10 @@ class Game extends \Table
         $this->gamestate->nextState("nextRound");
     }
 
-    public function st_propuhSolo(): void
+    public function st_soloTurn(): void
     {
+        $card_id = (int) $this->cards->getCardOnTop("deck")["id"];
+        $this->solo_playCard($card_id, 1);
         $this->gamestate->nextState("realPlayer");
     }
 
@@ -612,7 +680,8 @@ class Game extends \Table
         if ($this->isSolo()) {
             $this->tokens->createCards(
                 [["type_arg" => 1, "type" => PROPUH, "nbr" => 7]],
-                "solo",
+                "hand",
+                1,
             );
 
             $difficulty = $this->soloDifficulty();

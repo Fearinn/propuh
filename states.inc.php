@@ -22,7 +22,7 @@ if (!defined('ST_GAME_END')) { // ensure this block is only invoked once, since 
     define("ST_BETWEEN_PLAYERS", 4);
     define("ST_RESOLVE_TRICK", 5);
     define("ST_BETWEEN_ROUNDS", 6);
-    define("ST_PROPUH_SOLO", 7);
+    define("ST_SOLO_TURN", 7);
     define("ST_GAME_END", 99);
 }
 
@@ -48,7 +48,10 @@ $machinestates = [
             "actMoveGranny",
             "actSkipGrannyMove",
         ],
-        "transitions" => ["playerTurn" => ST_PLAYER_TURN, "skip" => ST_PLAYER_TURN],
+        "transitions" => [
+            "playerTurn" => ST_PLAYER_TURN,
+            "skip" => ST_PLAYER_TURN
+        ],
         "updateGameProgression" => true,
     ],
 
@@ -62,7 +65,10 @@ $machinestates = [
             "actPlayCard",
             "actUndoSkipGrannyMove"
         ],
-        "transitions" => ["nextPlayer" => ST_BETWEEN_PLAYERS, "undo" => ST_GRANNY_MOVE],
+        "transitions" => [
+            "nextPlayer" => ST_BETWEEN_PLAYERS,
+            "undo" => ST_GRANNY_MOVE,
+        ],
         "updateGameProgression" => true,
     ],
 
@@ -74,7 +80,8 @@ $machinestates = [
         "action" => "st_betweenPlayers",
         "transitions" => [
             "nextPlayer" => ST_PLAYER_TURN,
-            "nextTrick" => ST_RESOLVE_TRICK
+            "nextTrick" => ST_RESOLVE_TRICK,
+            "soloTurn" => ST_SOLO_TURN,
         ],
     ],
 
@@ -84,7 +91,11 @@ $machinestates = [
         "descriptionmyturn" => clienttranslate("Resolving trick..."),
         "type" => "game",
         "action" => "st_resolveTrick",
-        "transitions" => ["nextTrick" => ST_PLAYER_TURN, "nextRound" => ST_BETWEEN_ROUNDS],
+        "transitions" => [
+            "nextTrick" => ST_PLAYER_TURN,
+            "nextRound" => ST_BETWEEN_ROUNDS,
+            "soloTurn" => ST_SOLO_TURN,
+        ],
     ],
 
     ST_BETWEEN_ROUNDS => [
@@ -93,15 +104,18 @@ $machinestates = [
         "descriptionmyturn" => clienttranslate("Finishing round..."),
         "type" => "game",
         "action" => "st_betweenRounds",
-        "transitions" => ["nextRound" => ST_GRANNY_MOVE, "gameEnd" => ST_GAME_END],
+        "transitions" => [
+            "nextRound" => ST_GRANNY_MOVE,
+            "gameEnd" => ST_GAME_END
+        ],
     ],
 
-    ST_PROPUH_SOLO => [
-        "name" => "propuhSolo",
+    ST_SOLO_TURN => [
+        "name" => "soloTurn",
         "description" => clienttranslate("Playing card for Propuh..."),
         "descriptionmyturn" => clienttranslate("Playing card for Propuh..."),
         "type" => "game",
-        "action" => "st_propuhSolo",
+        "action" => "st_soloTurn",
         "transitions" => ["realPlayer" => ST_BETWEEN_PLAYERS],
     ],
 

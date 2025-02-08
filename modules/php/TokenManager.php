@@ -39,7 +39,7 @@ class TokenManager
     {
         $this->validateLocation($player_id);
 
-        $this->game->incStat(1, "tokensPlaced", $player_id);
+        $this->game->custom_incStat(1, "tokensPlaced", $player_id);
 
         $location = (array) $this->LOCATIONS[$location_id];
         $location_label = (string) $location["label"];
@@ -77,7 +77,7 @@ class TokenManager
 
     public function discard(int $location_id, int $player_id): void
     {
-        $this->game->incStat(1, "tokensRemoved", $player_id);
+        $this->game->custom_incStat(1, "tokensRemoved", $player_id);
 
         $location = (array) $this->LOCATIONS[$location_id];
         $location_label = (string) $location["label"];
