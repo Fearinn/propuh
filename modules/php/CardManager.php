@@ -47,7 +47,7 @@ class CardManager
             }
 
             return;
-        } 
+        }
 
         if ($card["location"] !== "hand" || (int) $card["location_arg"] !== $player_id) {
             throw new \BgaVisibleSystemException("This card is not in your hand");
@@ -97,11 +97,13 @@ class CardManager
         $this->game->globals->inc(PLAY_COUNT, 1);
     }
 
-    public function weight(): int
+    public function weight(int $location_id = null): int
     {
         $weight = $this->value;
 
-        $location_id = (int) $this->location();
+        if (!$location_id) {
+            $location_id = (int) $this->location();
+        }
 
         if ($this->suit_id === $location_id) {
             $weight += 10;
@@ -136,7 +138,7 @@ class CardManager
                     $this->game->globals->set(ATTACK_CARD, $counterCard_id);
                 } else {
                     $this->game->custom_incStat(1, "successfulCounterplays", $counterCard->player_id);
-                    
+
                     $this->game->notify->all(
                         "successfulCounterplay",
                         clienttranslate('${player_name} (${role_label}) successfully counters ${player_name2}'),

@@ -377,16 +377,17 @@ class Game extends \Table
         }
 
         $grannyCard = new CardManager($grannyCard_id, $this);
+        $grannyCardLocation_id = (int) $grannyCard->location();
 
-        if ($propuhCard->weight() > $grannyCard->weight()) {
-            return (int) $grannyCard->location();
+        if ($propuhCard->weight($grannyCardLocation_id) > $grannyCard->weight()) {
+            return $grannyCardLocation_id;
         }
 
-        if ($grannyCard->location() !== $propuhCard->suit_id) {
+        if ($grannyCardLocation_id !== $propuhCard->suit_id) {
             return $propuhCard->suit_id;
         }
 
-        $location_id = $grannyCard->location() + 1;
+        $location_id = $grannyCardLocation_id + 1;
         if ($location_id > 3) {
             $location_id = 1;
         }
