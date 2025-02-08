@@ -210,7 +210,7 @@ class Game extends \Table
     {
         $players = $this->loadPlayersBasicInfos();
         $drawnCards = [];
-        $deckCount = $this->cards->countCardsInLocation("deck");
+        $deckCount = (int) $this->cards->countCardsInLocation("deck");
 
         foreach ($players as $player_id => $player) {
             if ($deckCount <= 1) {
@@ -312,7 +312,7 @@ class Game extends \Table
             }
         }
 
-        if (!$winner_id && $this->cards->countCardsInLocation("discard") === 28) {
+        if (!$winner_id && (int) $this->cards->countCardsInLocation("discard") === 28) {
             $winner_id = $this->propuhId();
         }
 
@@ -450,7 +450,7 @@ class Game extends \Table
      */
     public function getGameProgression()
     {
-        $progression = $this->cards->countCardsInLocation("discard") / 28 * 100;
+        $progression = (int) $this->cards->countCardsInLocation("discard") / 28 * 100;
         return round($progression);
     }
 
@@ -506,7 +506,10 @@ class Game extends \Table
         $card = new CardManager($card_id, $this);
         $card->resolve();
 
-        if ($this->globals->get(PLAY_COUNT) === 4) {
+        if (
+            $this->globals->get(PLAY_COUNT) === 4 ||
+            ($this->isSolo() && (int) $this->cards->countCardsInLocation("deck") === 0)
+        ) {
             $card_id = (int) $this->getUniqueValueFromDB("SELECT card_id FROM card WHERE card_location IN (1, 2, 3)");
 
             if ($card_id) {
@@ -669,7 +672,8 @@ class Game extends \Table
         }
 
         foreach ($players as $player_id => $player) {
-            $this->cards->pickCards(4, "deck", $player_id);
+            $initialHandCount = $this->isSolo() ? 3 : 4;
+            $this->cards->pickCards($initialHandCount, "deck", $player_id);
 
             $player_role = $this->getPlayerRole($player_id);
             $this->tokens->createCards(
