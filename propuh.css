@@ -495,13 +495,19 @@ html {
 }
 .pph_boards .pph_boardTokens {
   position: absolute;
-  right: 1%;
-  bottom: 5%;
   display: flex;
   justify-content: center;
 }
 .pph_boards .pph_boardTokens .pph_token:not(:first-child) {
   margin-left: calc(var(--cardWidth) / -5);
+}
+.pph_boards .pph_boardTokens[data-slot-id=granny] {
+  right: 1%;
+  bottom: 5%;
+}
+.pph_boards .pph_boardTokens[data-slot-id=propuh] {
+  left: 1%;
+  top: 5%;
 }
 .pph_boards .pph_granny {
   background-image: url("img/standee.png");

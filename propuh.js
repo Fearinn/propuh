@@ -246,27 +246,39 @@ define([
         {}
       );
 
-      this.pph.stocks.tokens[1] = new CardStock(
+      this.pph.stocks.tokens[1] = new SlotStock(
         this.pph.managers.tokens,
         document.getElementById("pph_tableTokens"),
         {
-          sort: sortFunction("type"),
+          slotsIds: Object.keys(this.pph.info.roles),
+          mapCardToSlot: (token) => {
+            return token.type;
+          },
+          slotClasses: ["pph_boardTokens"],
         }
       );
 
-      this.pph.stocks.tokens[2] = new CardStock(
+      this.pph.stocks.tokens[2] = new SlotStock(
         this.pph.managers.tokens,
         document.getElementById("pph_stoveTokens"),
         {
-          sort: sortFunction("type"),
+          slotsIds: Object.keys(this.pph.info.roles),
+          mapCardToSlot: (token) => {
+            return token.type;
+          },
+          slotClasses: ["pph_boardTokens"],
         }
       );
 
-      this.pph.stocks.tokens[3] = new CardStock(
+      this.pph.stocks.tokens[3] = new SlotStock(
         this.pph.managers.tokens,
         document.getElementById("pph_bedTokens"),
         {
-          sort: sortFunction("type"),
+          slotsIds: Object.keys(this.pph.info.roles),
+          mapCardToSlot: (token) => {
+            return token.type;
+          },
+          slotClasses: ["pph_boardTokens"],
         }
       );
 

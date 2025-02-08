@@ -53,15 +53,15 @@
     </div>
     <div id="pph_table" class="pph_table pph_board" data-board="1">
       <div id="pph_tableCards" class="pph_boardCards"></div>
-      <div id="pph_tableTokens" class="pph_boardTokens"></div>
+      <div id="pph_tableTokens"></div>
     </div>
     <div id="pph_stove" class="pph_stove pph_board" data-board="2">
       <div id="pph_stoveCards" class="pph_boardCards"></div>
-      <div id="pph_stoveTokens" class="pph_boardTokens"></div>
+      <div id="pph_stoveTokens"></div>
     </div>
     <div id="pph_bed" class="pph_bed pph_board" data-board="3">
       <div id="pph_bedCards" class="pph_boardCards"></div>
-      <div id="pph_bedTokens" class="pph_boardTokens"></div>
+      <div id="pph_bedTokens"></div>
     </div>
   </div>
 </div>

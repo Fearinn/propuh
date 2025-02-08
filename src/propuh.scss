@@ -111,13 +111,21 @@ html {
 
     &Tokens {
       position: absolute;
-      right: 1%;
-      bottom: 5%;
       display: flex;
       justify-content: center;
 
       .pph_token:not(:first-child) {
         margin-left: calc(var(--cardWidth) / -5);
+      }
+
+      &[data-slot-id=granny] {
+        right: 1%;
+        bottom: 5%;
+      }
+
+      &[data-slot-id=propuh] {
+        left: 1%;
+        top: 5%;
       }
     }
   }
