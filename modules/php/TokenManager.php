@@ -82,7 +82,7 @@ class TokenManager
         $location = (array) $this->LOCATIONS[$location_id];
         $location_label = (string) $location["label"];
 
-        $opponent_id = (int) $this->game->getPlayerAfter($player_id);
+        $opponent_id = $this->game->isSolo() ? 1 : (int) $this->game->getPlayerAfter($player_id);
         $this->game->tokens->moveCard($this->card_id, "hand", $opponent_id);
 
         $this->game->notify->all(

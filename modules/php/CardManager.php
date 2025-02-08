@@ -101,11 +101,13 @@ class CardManager
     {
         $weight = $this->value;
 
-        $location_id = (int) $this->getCard()["location"];
+        $location_id = (int) $this->location();
 
         if ($this->suit_id === $location_id) {
             $weight += 10;
         }
+
+        throw new \BgaUserException($weight);
         return $weight;
     }
 
@@ -142,7 +144,7 @@ class CardManager
                         [
                             "player_id" => $counterCard->player_id,
                             "player_id2" => $this->player_id,
-                            "player_name2" => $this->game->getPlayerNameById($this->player_id),
+                            "player_name2" => $this->player_id === 1 ? "Propuh" : $this->game->getPlayerNameById($this->player_id),
                             "i18n" => ["role_label"],
                         ]
                     );

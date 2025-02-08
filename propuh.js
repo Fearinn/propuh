@@ -514,7 +514,9 @@ define([
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
     setupNotifications: function () {
-      this.bgaSetupPromiseNotifications();
+      this.bgaSetupPromiseNotifications({
+        minDuration: 1000,
+      });
     },
 
     notif_moveGranny: async function (args) {
@@ -575,7 +577,10 @@ define([
       const token = args.token;
 
       this.pph.stocks.tokens[token.location].addCard(token, {
-        fromElement: document.getElementById(`pph_voidHand-${player_id}`),
+        fromElement:
+          player_id == 1
+            ? document.getElementById("pph_discard")
+            : document.getElementById(`pph_voidHand-${player_id}`),
       });
     },
 

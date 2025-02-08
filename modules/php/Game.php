@@ -167,6 +167,10 @@ class Game extends \Table
 
     public function propuhId(): int
     {
+        if ($this->isSolo()) {
+            return 1;
+        }
+
         return (int) $this->getUniqueValueFromDB("SELECT player_id FROM player WHERE player_role='propuh'");
     }
 
@@ -246,13 +250,12 @@ class Game extends \Table
 
     public function checkGoals(): bool
     {
-        $players = $this->loadPlayersBasicInfos();
         $completedGoals = $this->globals->get(COMPLETED_GOALS);
 
         $winner_id = null;
-        foreach ($players as $player_id => $player) {
-            $player_role = $this->getPlayerRole($player_id);
-            $goals = $this->ROLES[$player_role]["goals"];
+        foreach ($this->ROLES as $player_role => $role_info) {
+            $player_id = $player_role === GRANNY ? $this->grannyId() : $this->propuhId();
+            $goals = $role_info["goals"];
             $goalsMet = true;
 
             foreach ($goals as $goal_id => $goal) {
@@ -314,13 +317,25 @@ class Game extends \Table
         }
 
         if ($winner_id) {
-            $player_role = $this->getPlayerRole($winner_id);
-            $this->custom_setStat(100, "{$player_role}Win%", $winner_id);
-            $this->DbQuery("UPDATE player SET player_score=1 WHERE player_id=$winner_id");
+            $this->defineWinner($winner_id);
             return true;
         }
 
         return false;
+    }
+
+    public function defineWinner($winner_id): void
+    {
+        $player_role = $this->getPlayerRole($winner_id);
+        $this->custom_setStat(100, "{$player_role}Win%", $winner_id);
+
+        if ($winner_id === 1) {
+            $granny_id = $this->grannyId();
+            $this->DbQuery("UPDATE player SET player_score=-1 WHERE player_id=$granny_id");
+            return;
+        }
+
+        $this->DbQuery("UPDATE player SET player_score=1 WHERE player_id=$winner_id");
     }
 
     public function solo_playCard($card_id): void
@@ -686,14 +701,13 @@ class Game extends \Table
 
             $difficulty = $this->soloDifficulty();
 
-            if ($difficulty === 2) {
-                $this->tokens->pickCardForLocation("solo", 3);
+            if ($difficulty >= 2) {
+                $this->DbQuery("UPDATE token SET card_location=3 WHERE card_location='hand' AND card_location_arg=1 LIMIT 1");
             }
 
             if ($difficulty === 3) {
-                $this->tokens->pickCardForLocation("solo", 1);
-                $this->tokens->pickCardForLocation("solo", 2);
-                $this->tokens->pickCardForLocation("solo", 3);
+                $this->DbQuery("UPDATE token SET card_location=1 WHERE card_location='hand' AND card_location_arg=1 LIMIT 1");
+                $this->DbQuery("UPDATE token SET card_location=2 WHERE card_location='hand' AND card_location_arg=1 LIMIT 1");
             }
         }
 
