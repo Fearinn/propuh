@@ -746,25 +746,8 @@ class Game extends \Table
     protected function zombieTurn(array $state, int $active_player): void
     {
         $state_name = $state["name"];
-
-        if ($state["type"] === "activeplayer") {
-            switch ($state_name) {
-                default: {
-                        $this->gamestate->nextState("zombiePass");
-                        break;
-                    }
-            }
-
-            return;
-        }
-
-        // Make sure player is in a non-blocking status for role turn.
-        if ($state["type"] === "multipleactiveplayer") {
-            $this->gamestate->setPlayerNonMultiactive($active_player, '');
-            return;
-        }
-
-        throw new \feException("Zombie mode not supported at this game state: \"{$state_name}\".");
+        $this->gamestate->jumpToState(99);
+        // throw new \feException("Zombie mode not supported at this game state: \"{$state_name}\".");
     }
 
     public function debug_goals(): void
