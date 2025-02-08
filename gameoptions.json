@@ -3,16 +3,20 @@
     "name": "Difficulty",
     "values": {
       "1": {
-        "name": "1",
+        "name": "Easy",
         "description": "No Propuh tokens at the start"
       },
       "2": {
-        "name": "2",
+        "name": "Normal",
         "description": "One Propuh token in the bed at the start"
       },
       "3": {
-        "name": "3",
-        "description": "One Propuh on each location at the start"
+        "name": "Hard",
+        "description": "One Propuh token on each location at the start"
+      },
+      "4": {
+        "name": "Random",
+        "description": "Up to the maximum of Propuh tokens on each location, according to the random difficulty cards"
       }
     },
     "displaycondition": [
@@ -21,5 +25,34 @@
         "value": 1
       }
     ]
+  },
+  "101": {
+    "name": "Random difficulty cards drawn",
+    "values": {
+      "1": {
+        "name": "1 (easy)",
+        "description": "Each random difficulty card places 1 or 2 tokens on one location"
+      },
+      "2": {
+        "name": "2 (normal)",
+        "description": "Each random difficulty card places 1 or 2 tokens on one location"
+      },
+      "3": {
+        "name": "3 (hard)",
+        "description": "Each random difficulty card places 1 or 2 tokens on one location"
+      },
+      "4": {
+        "name": "4 (impossible?!)",
+        "description": "Each random difficulty card places 1 or 2 tokens on one location"
+      }
+    },
+    "displaycondition": [
+      {
+        "type": "otheroption",
+        "id": 100,
+        "value": 4
+      }
+    ],
+    "default": 2
   }
 }

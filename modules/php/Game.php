@@ -39,6 +39,7 @@ class Game extends \Table
 {
     private array $CARDS;
     private array $ROLES;
+    private array $RANDOM_DIFFICULTY;
     public string $deckFields = "card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg";
 
     public function __construct()
@@ -49,6 +50,7 @@ class Game extends \Table
 
         $this->initGameStateLabels([
             "soloDifficulty" => 100,
+            "randomDifficulty" => 101,
         ]);
 
         $this->cards = $this->getNew("module.common.deck");
@@ -68,9 +70,13 @@ class Game extends \Table
         return $this->getPlayersNumber() === 1;
     }
 
-    public function soloDifficulty(): int
+    public function solo_difficulty(): int
     {
         return (int) $this->getGameStateValue("soloDifficulty");
+    }
+
+    public function solo_randomDifficulty(): int {
+        return (int) $this->getGameStateValue("randomDifficulty");
     }
 
     public function custom_incStat(int $inc, string $name, int $player_id)
@@ -248,7 +254,7 @@ class Game extends \Table
         );
     }
 
-    public function checkGoals(): bool
+    public function checkGoals($defineWinner = true): bool
     {
         $completedGoals = $this->globals->get(COMPLETED_GOALS);
 
@@ -310,6 +316,10 @@ class Game extends \Table
                     break;
                 }
             }
+        }
+
+        if (!$defineWinner) {
+            return false;
         }
 
         if (!$winner_id && (int) $this->cards->countCardsInLocation("discard") === 28) {
@@ -707,21 +717,37 @@ class Game extends \Table
                 1,
             );
 
-            $difficulty = $this->soloDifficulty();
+            $difficulty = $this->solo_difficulty();
 
-            if ($difficulty >= 2) {
+            if ($difficulty === 2) {
                 $this->DbQuery("UPDATE token SET card_location=3 WHERE card_location='hand' AND card_location_arg=1 LIMIT 1");
             }
 
             if ($difficulty === 3) {
                 $this->DbQuery("UPDATE token SET card_location=1 WHERE card_location='hand' AND card_location_arg=1 LIMIT 1");
                 $this->DbQuery("UPDATE token SET card_location=2 WHERE card_location='hand' AND card_location_arg=1 LIMIT 1");
+                $this->DbQuery("UPDATE token SET card_location=3 WHERE card_location='hand' AND card_location_arg=1 LIMIT 1");
             }
+
+            if ($difficulty === 4) {
+                $randomDifficulty = $this->solo_randomDifficulty();
+                $randomCards = $this->RANDOM_DIFFICULTY;
+                shuffle($randomCards);
+                $randomCards = array_slice($randomCards, 0, $randomDifficulty);
+
+                foreach ($randomCards as $randomCard) {
+                    $location_id = (int) $randomCard["location_id"];
+                    $tokenCount = (int) $randomCard["tokenCount"];
+
+                    $this->DbQuery("UPDATE token SET card_location=$location_id WHERE card_location='hand' AND card_location_arg=1 LIMIT $tokenCount");
+                }
+            } 
         }
 
         $this->globals->set(COMPLETED_GOALS, $completedGoals);
         $this->globals->set(PLAY_COUNT, 0);
         $this->globals->set(GRANNY_LOCATION, 2);
+        $this->checkGoals(false);
 
         $this->reloadPlayersBasicInfos();
         $this->gamestate->changeActivePlayer($granny_id);

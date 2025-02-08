@@ -126,3 +126,26 @@ $this->ROLES = [
         ],
     ],
 ];
+
+$this->RANDOM_DIFFICULTY = [
+    1 => [
+        "location_id" => 1,
+        "tokenCount" => 1,
+    ],
+    2 => [
+        "location_id" => 1,
+        "tokenCount" => 2,
+    ],
+    3 => [
+        "location_id" => 2,
+        "tokenCount" => 1,
+    ],
+    4 => [
+        "location_id" => 3,
+        "tokenCount" => 1,
+    ],
+    5 => [
+        "location_id" => 3,
+        "tokenCount" => 2,
+    ],
+];
