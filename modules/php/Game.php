@@ -75,7 +75,8 @@ class Game extends \Table
         return (int) $this->getGameStateValue("soloDifficulty");
     }
 
-    public function solo_randomDifficulty(): int {
+    public function solo_randomDifficulty(): int
+    {
         return (int) $this->getGameStateValue("randomDifficulty");
     }
 
@@ -338,6 +339,18 @@ class Game extends \Table
     {
         $player_role = $this->getPlayerRole($winner_id);
         $this->custom_setStat(100, "{$player_role}Win%", $winner_id);
+
+        if ($this->isSolo()) {
+            $this->custom_setStat(100, "soloWin%", $winner_id);
+
+            $difficulty = $this->solo_difficulty();
+            $this->custom_setStat(100, "soloWin%-{$difficulty}", $winner_id);
+
+            if ($difficulty === 4) {
+               $randomDifficulty = $this->solo_randomDifficulty();
+               $this->custom_setStat(100, "randomWin%-{$randomDifficulty}", $winner_id);
+            }
+        }
 
         if ($winner_id === 1) {
             $granny_id = $this->grannyId();
@@ -692,7 +705,10 @@ class Game extends \Table
                 $player_id
             );
 
-            $this->initStat("player", "{$player_role}Win%", 0, $player_id);
+            if (!$this->isSolo()) {
+                $this->initStat("player", "{$player_role}Win%", 0, $player_id);
+            }
+
             $this->initStat("player", "successfulCounterplays", 0, $player_id);
             $this->initStat("player", "tokensPlaced", 0, $player_id);
         }
@@ -741,7 +757,12 @@ class Game extends \Table
 
                     $this->DbQuery("UPDATE token SET card_location=$location_id WHERE card_location='hand' AND card_location_arg=1 LIMIT $tokenCount");
                 }
-            } 
+
+                $this->initStat("player", "randomWin%-{$randomDifficulty}", 0, $player_id);
+            }
+
+            $this->initStat("player", "soloWin%", 0, $player_id);
+            $this->initStat("player", "soloWin%-{$difficulty}", 0, $player_id);
         }
 
         $this->globals->set(COMPLETED_GOALS, $completedGoals);

@@ -24,6 +24,51 @@
       "id": 14,
       "name": "Tokens removed",
       "type": "int"
+    },
+    "soloWin%": {
+      "id": 15,
+      "name": "Solo win %",
+      "type": "int"
+    },
+    "soloWin%-1": {
+      "id": 16,
+      "name": "Solo win % (easy)",
+      "type": "int"
+    },
+    "soloWin%-2": {
+      "id": 17,
+      "name": "Solo win % (normal)",
+      "type": "int"
+    },
+    "soloWin%-3": {
+      "id": 18,
+      "name": "Solo win % (hard)",
+      "type": "int"
+    },
+    "soloWin%-4": {
+      "id": 19,
+      "name": "Solo win % (random)",
+      "type": "int"
+    },
+    "randomWin%-1": {
+      "id": 20,
+      "name": "Solo win % (random, 1 card)",
+      "type": "int"
+    },
+    "randomWin%-2": {
+      "id": 21,
+      "name": "Solo win % (random, 2 cards)",
+      "type": "int"
+    },
+    "randomWin%-3": {
+      "id": 22,
+      "name": "Solo win % (random, 3 cards)",
+      "type": "int"
+    },
+    "randomWin%-4": {
+      "id": 23,
+      "name": "Solo win % (random, 4 cards)",
+      "type": "int"
     }
   },
   "table": {}
