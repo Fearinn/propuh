@@ -664,6 +664,10 @@ class Game extends \Table
         $this->cards->createCards($cards, "deck");
         $this->cards->shuffle("deck");
 
+        if ($this->isSolo()) {
+            $this->cards->pickCardsForLocation(2, "deck", "discard");
+        }
+
         foreach ($players as $player_id => $player) {
             $this->cards->pickCards(4, "deck", $player_id);
 

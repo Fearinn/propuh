@@ -107,7 +107,6 @@ class CardManager
             $weight += 10;
         }
 
-        throw new \BgaUserException($weight);
         return $weight;
     }
 
