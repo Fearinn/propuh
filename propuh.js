@@ -163,6 +163,19 @@ define([
         }
       }
 
+      // HAND 
+
+      const handElement = document.createElement("div");
+      handElement.id = "pph_hand";
+      handElement.classList.add("pph_hand");
+
+      if (this.getGameUserPreference(100) == 1) {
+        document.getElementById("game_play_area").insertAdjacentElement("afterbegin", handElement);
+        handElement.classList.add("pph_floatingHand");
+      } else {
+        document.getElementById("pph_gameArea").insertAdjacentElement("afterbegin", handElement);
+      }
+
       // LOCATIONS
 
       this.addTooltip("pph_table", _("Table"), "");

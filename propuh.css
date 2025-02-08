@@ -569,7 +569,6 @@ html {
   border-radius: 100%;
   height: var(--tokenHeight);
   width: var(--tokenWidth);
-  z-index: 1;
 }
 .pph_token[data-role=granny] {
   background-image: url("img/grannyToken.png");
@@ -591,6 +590,10 @@ html {
 }
 
 .pph_hand {
+  margin-bottom: 32px;
+}
+
+.pph_floatingHand {
   position: fixed;
   bottom: calc(var(--cardHeight) / -4);
   left: 45%;

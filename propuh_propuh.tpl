@@ -65,7 +65,6 @@
     </div>
   </div>
 </div>
-<div id="pph_hand" class="pph_hand"></div>
 
 <script type="text/javascript"></script>
 
