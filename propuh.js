@@ -64,6 +64,8 @@ define([
         location_id: null,
       };
 
+      const mainAid = gamedatas.isSolo ? "soloAid" : "turnAid";
+
       this.pph.managers.help = new HelpManager(this, {
         buttons: [
           new BgaHelpExpandableButton({
@@ -72,7 +74,7 @@ define([
             expandedHeight: "315px",
             foldedHtml: `<span class="pph_helpFolded">?</span>`,
             unfoldedHtml: `<div id="pph_aidContainer" class="pph_aidContainer">
-              <div class="pph_aidCard" style="background-image: url(${g_gamethemeurl}/img/aid/turnAid.jpg)"></div>
+              <div class="pph_aidCard" style="background-image: url(${g_gamethemeurl}/img/aid/${mainAid}.jpg)"></div>
               <div class="pph_aidCard" style="background-image: url(${g_gamethemeurl}/img/aid/${gamedatas.player_role}Aid.jpg)"></div>
             </div>`,
           }),

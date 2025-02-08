@@ -628,6 +628,7 @@ class Game extends \Table
         $result["players"] = $this->getCollectionFromDb(
             "SELECT player_id id, player_score score, player_role role FROM player"
         );
+        $result["isSolo"] = $this->isSolo();
         $result["player_role"] = $this->getPlayerRole($current_player_id);
         $result["hand"] = $this->getHand($current_player_id, false);
         $result["playedCards"] = $this->getPlayedCards(null);
