@@ -9,5 +9,15 @@
         "default": true
       }
     }
+  },
+    "101": {
+    "name": "Sound effects",
+    "values": {
+      "0": { "name": "Disabled" },
+      "1": {
+        "name": "Enabled",
+        "default": true
+      }
+    }
   }
 }

@@ -165,17 +165,21 @@ define([
         }
       }
 
-      // HAND 
+      // HAND
 
       const handElement = document.createElement("div");
       handElement.id = "pph_hand";
       handElement.classList.add("pph_hand");
 
       if (this.getGameUserPreference(100) == 1) {
-        document.getElementById("game_play_area").insertAdjacentElement("afterbegin", handElement);
+        document
+          .getElementById("game_play_area")
+          .insertAdjacentElement("afterbegin", handElement);
         handElement.classList.add("pph_floatingHand");
       } else {
-        document.getElementById("pph_gameArea").insertAdjacentElement("afterbegin", handElement);
+        document
+          .getElementById("pph_gameArea")
+          .insertAdjacentElement("afterbegin", handElement);
       }
 
       // LOCATIONS
@@ -438,6 +442,15 @@ define([
       return this.gamedatas.gamestate.name;
     },
 
+    playSound: function (sound) {
+      if (this.getGameUserPreference(101) == 0) {
+        return;
+      }
+
+      this.disableNextMoveSound();
+      playSound(`propuh_${sound}`);
+    },
+
     setBoardsSelectable: function (grannyLocation) {
       const selectedClass = "pph_board-selected";
       const boardElements = document.querySelectorAll("[data-board]");
@@ -564,6 +577,8 @@ define([
             : undefined,
         fromStock: player_id == 1 ? this.pph.stocks.trick.deck : undefined,
       });
+
+      this.playSound("card");
     },
 
     notif_successfulCounterplay: async function (args) {},
@@ -622,6 +637,16 @@ define([
       document
         .getElementById(`pph_goal-${player_role}-${goal_id}`)
         .classList.add("pph_completed");
+
+      if (player_role === "propuh") {
+        if (goal_id == 1) {
+          this.playSound("door");
+        }
+
+        if (goal_id == 3) {
+          this.playSound("window");
+        }
+      }
     },
 
     notif_incompleteGoal: async function (args) {

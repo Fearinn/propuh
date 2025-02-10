@@ -9,7 +9,54 @@
 -- See http://en.boardgamearena.com/#!doc/Studio for more information.
 -------
 -->
-
+<audio
+  id="audiosrc_propuh_card"
+  src="{GAMETHEMEURL}img/sounds/propuh_card.mp3"
+  preload="none"
+  autobuffer
+></audio>
+<audio
+  id="audiosrc_o_propuh_card"
+  src="{GAMETHEMEURL}img/sounds/propuh_card.ogg"
+  preload="none"
+  autobuffer
+></audio>
+<audio
+  id="audiosrc_propuh_steps"
+  src="{GAMETHEMEURL}img/sounds/propuh_steps.mp3"
+  preload="none"
+  autobuffer
+></audio>
+<audio
+  id="audiosrc_o_propuh_steps"
+  src="{GAMETHEMEURL}img/sounds/propuh_steps.ogg"
+  preload="none"
+  autobuffer
+></audio>
+<audio
+  id="audiosrc_propuh_door"
+  src="{GAMETHEMEURL}img/sounds/propuh_door.mp3"
+  preload="none"
+  autobuffer
+></audio>
+<audio
+  id="audiosrc_o_propuh_door"
+  src="{GAMETHEMEURL}img/sounds/propuh_door.ogg"
+  preload="none"
+  autobuffer
+></audio>
+<audio
+  id="audiosrc_propuh_window"
+  src="{GAMETHEMEURL}img/sounds/propuh_window.mp3"
+  preload="none"
+  autobuffer
+></audio>
+<audio
+  id="audiosrc_o_propuh_window"
+  src="{GAMETHEMEURL}img/sounds/propuh_window.ogg"
+  preload="none"
+  autobuffer
+></audio>
 <div id="pph_gameArea" class="pph_gameArea">
   <div id="pph_discard" class="pph_discard"></div>
   <div id="pph_boards" class="pph_boards">
