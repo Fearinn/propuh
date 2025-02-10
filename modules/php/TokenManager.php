@@ -50,7 +50,7 @@ class TokenManager
         if ($tokenCount === $tokenLimit) {
             $this->game->notify->all(
                 "message",
-                clienttranslate('${player_name} (${role_label}) may not place more tokens in the ${location_label}'),
+                clienttranslate('${player_name} (${role_label}) may not place more tokens on the ${location_label}'),
                 [
                     "player_id" => $player_id,
                     "location_label" => $location_label,
@@ -65,7 +65,7 @@ class TokenManager
 
         $this->game->notify->all(
             "placeToken",
-            clienttranslate('${player_name} (${role_label}) places a token in the ${location_label}'),
+            clienttranslate('${player_name} (${role_label}) places a token on the ${location_label}'),
             [
                 "player_id" => $player_id,
                 "token" => $this->getCard(),

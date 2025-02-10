@@ -80,7 +80,7 @@ class CardManager
 
         $this->game->notify->all(
             "playCard",
-            clienttranslate('${player_name} (${role_label}) plays a ${value} of ${suit_label} in the ${location_label}'),
+            clienttranslate('${player_name} (${role_label}) plays a ${value} of ${suit_label} on the ${location_label}'),
             [
                 "player_id" => $player_id,
                 "card" => $this->getCard(),
@@ -121,6 +121,7 @@ class CardManager
     public function resolve($lastCard = false): void
     {
         $location_id = (int) $this->location();
+        $weight = $this->weight();
         $this->discard();
 
         if ($lastCard) {
@@ -134,7 +135,7 @@ class CardManager
             $counterCard = new CardManager($counterCard_id, $this->game);
 
             if ((int) $counterCard->location() === $location_id) {
-                if ($this->weight() >= $counterCard->weight()) {
+                if ($weight >= $counterCard->weight()) {
                     $this->game->placeToken($location_id, $this->player_id);
                     $this->game->globals->set(ATTACK_CARD, $counterCard_id);
                 } else {
