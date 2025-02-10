@@ -502,7 +502,7 @@ class Game extends \Table
 
     public function st_betweenPlayers(): void
     {
-        $player_id = (int)$this->getActivePlayerId();
+        $player_id = (int) $this->getActivePlayerId();
 
         $this->giveExtraTime($player_id);
         $this->activeNextPlayer();
@@ -516,7 +516,7 @@ class Game extends \Table
             $this->globals->set(RESOLVE_TRICK, true);
         }
 
-        if ($this->isSolo()) {
+        if ($this->isSolo() && ($this->globals->get(PLAY_COUNT) === 1 || $this->globals->get(PLAY_COUNT) === 3)) {
             $this->gamestate->nextState("soloTurn");
             return;
         }
@@ -527,6 +527,7 @@ class Game extends \Table
     public function st_resolveTrick(): void
     {
         $card_id = $this->globals->get(ATTACK_CARD);
+
         $card = new CardManager($card_id, $this);
         $card->resolve();
 

@@ -6,6 +6,7 @@ use const Bga\Games\propuh\ATTACK_CARD;
 use const Bga\Games\propuh\GRANNY_LOCATION;
 use const Bga\Games\propuh\MOVED_GRANNY;
 use const Bga\Games\propuh\PLAY_COUNT;
+use const Bga\Games\propuh\RESOLVE_TRICK;
 
 class CardManager
 {
@@ -152,6 +153,7 @@ class CardManager
 
                     $counterCard->discard();
                     $this->game->globals->set(ATTACK_CARD, null);
+                    $this->game->globals->set(RESOLVE_TRICK, false);
                 }
 
                 return;
