@@ -442,13 +442,22 @@ define([
       return this.gamedatas.gamestate.name;
     },
 
-    playSound: function (sound) {
+    playSound: function (sound, duration = null) {
       if (this.getGameUserPreference(101) == 0) {
         return;
       }
 
+      const soundId = `propuh_${sound}`;
+
       this.disableNextMoveSound();
-      playSound(`propuh_${sound}`);
+      playSound(soundId);
+
+      if (duration) {
+        setTimeout((
+        ) => {
+          stopSound(soundId)
+        }, duration); 
+      }
     },
 
     setBoardsSelectable: function (grannyLocation) {
@@ -564,6 +573,8 @@ define([
       this.pph.stocks.granny[location_id].addCard({
         id: "granny",
       });
+
+      this.playSound("steps", 2000);
     },
 
     notif_playCard: async function (args) {
