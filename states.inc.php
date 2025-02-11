@@ -81,6 +81,7 @@ $machinestates = [
         "transitions" => [
             "nextPlayer" => ST_PLAYER_TURN,
             "nextTrick" => ST_RESOLVE_TRICK,
+            "nextRound" => ST_BETWEEN_ROUNDS,
             "soloTurn" => ST_SOLO_TURN,
         ],
     ],

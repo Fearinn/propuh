@@ -80,6 +80,10 @@ class Game extends \Table
         return (int) $this->getGameStateValue("randomDifficulty");
     }
 
+    public function solo_isLastPlay(): bool {
+        return $this->isSolo() && (int) $this->cards->countCardsInLocation("deck") === 0;
+    }
+
     public function custom_incStat(int $inc, string $name, int $player_id)
     {
         if ($player_id !== 1) {
@@ -211,6 +215,19 @@ class Game extends \Table
             $token = new TokenManager($tokenCard_id, $this);
             $token->discard($location_id, $player_id);
         }
+    }
+
+    public function endRound(): void
+    {
+        $card_id = (int) $this->getUniqueValueFromDB("SELECT card_id FROM card WHERE card_location IN (1, 2, 3)");
+
+        if ($card_id) {
+            $card = new CardManager($card_id, $this);
+            $card->resolve(true);
+        }
+
+        $this->gamestate->nextState("nextRound");
+        return;
     }
 
     public function drawCards(): void
@@ -347,8 +364,8 @@ class Game extends \Table
             $this->custom_setStat(100, "soloWin%-{$difficulty}", $winner_id);
 
             if ($difficulty === 4) {
-               $randomDifficulty = $this->solo_randomDifficulty();
-               $this->custom_setStat(100, "randomWin%-{$randomDifficulty}", $winner_id);
+                $randomDifficulty = $this->solo_randomDifficulty();
+                $this->custom_setStat(100, "randomWin%-{$randomDifficulty}", $winner_id);
             }
         }
 
@@ -512,11 +529,21 @@ class Game extends \Table
             return;
         }
 
+        $playCount = $this->globals->get(PLAY_COUNT);
+
+        if (
+            $this->globals->get(PLAY_COUNT) === 4 || 
+            $this->solo_isLastPlay()
+        ) {
+            $this->endRound();
+            return;
+        }
+
         if ($this->globals->get(ATTACK_CARD)) {
             $this->globals->set(RESOLVE_TRICK, true);
         }
 
-        if ($this->isSolo() && ($this->globals->get(PLAY_COUNT) === 1 || $this->globals->get(PLAY_COUNT) === 3)) {
+        if ($this->isSolo() && ($playCount === 1 || $playCount === 3)) {
             $this->gamestate->nextState("soloTurn");
             return;
         }
@@ -532,17 +559,10 @@ class Game extends \Table
         $card->resolve();
 
         if (
-            $this->globals->get(PLAY_COUNT) === 4 ||
-            ($this->isSolo() && (int) $this->cards->countCardsInLocation("deck") === 0)
+            $this->globals->get(PLAY_COUNT) === 4 || 
+            $this->solo_isLastPlay()
         ) {
-            $card_id = (int) $this->getUniqueValueFromDB("SELECT card_id FROM card WHERE card_location IN (1, 2, 3)");
-
-            if ($card_id) {
-                $card = new CardManager($card_id, $this);
-                $card->resolve(true);
-            }
-
-            $this->gamestate->nextState("nextRound");
+            $this->endRound();
             return;
         }
 
