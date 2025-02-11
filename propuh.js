@@ -689,7 +689,7 @@ define([
 
           if (args.player_name && args.player_id == 1) {
             args.player_name = `<span class="playername" style="color: red;">${"Propuh"}</span>`;
-            args.role_label = "";
+            args.role_label = _("bot");
             log = log.replace("(${role_label})", "");
           }
 
