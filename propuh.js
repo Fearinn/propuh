@@ -87,7 +87,7 @@ define([
         zoomControls: {
           color: "black",
         },
-        zoomLevels: [0.5, 0.75, 1, 1.25, 1.5],
+        zoomLevels: [0.3, 0.35, 0.5, 0.75, 1, 1.25, 1.5],
         smooth: true,
         onZoomChange: (zoom) => {},
       });
