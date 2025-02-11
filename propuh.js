@@ -539,6 +539,7 @@ define([
     //// Player's action
 
     performAction: function (action, args = {}) {
+      args.clientVersion = this.gamedatas.gameVersion;
       this.bgaPerformAction(action, args);
     },
 

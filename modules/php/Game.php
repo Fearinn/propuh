@@ -65,6 +65,18 @@ class Game extends \Table
 
     /*  UTILITY FUNCTIONS */
 
+    public function checkVersion(?int $clientVersion): void
+    {
+        if ($clientVersion === null) {
+            return;
+        }
+
+        $serverVersion = (int) $this->gamestate->table_globals[300];
+        if ($clientVersion !== $serverVersion) {
+            throw new \BgaUserException($this->_("A new version of this game is now available. Please reload the page (F5)."));
+        }
+    }
+
     public function isSolo(): bool
     {
         return $this->getPlayersNumber() === 1;
@@ -80,7 +92,8 @@ class Game extends \Table
         return (int) $this->getGameStateValue("randomDifficulty");
     }
 
-    public function solo_isLastPlay(): bool {
+    public function solo_isLastPlay(): bool
+    {
         return $this->isSolo() && (int) $this->cards->countCardsInLocation("deck") === 0;
     }
 
@@ -420,8 +433,9 @@ class Game extends \Table
      *
      * @throws BgaUserException
      */
-    public function actMoveGranny(#[IntParam(min: 1, max: 3)] int $location_id): void
+    public function actMoveGranny(?int $clientVersion, #[IntParam(min: 1, max: 3)] int $location_id): void
     {
+        $this->checkVersion($clientVersion);
         $player_id = (int) $this->getActivePlayerId();
 
         $this->globals->set(GRANNY_LOCATION, $location_id);
@@ -439,13 +453,17 @@ class Game extends \Table
         $this->gamestate->nextState("playerTurn");
     }
 
-    public function actSkipGrannyMove(): void
+    public function actSkipGrannyMove(?int $clientVersion): void
     {
+        $this->checkVersion($clientVersion);
+        
         $this->gamestate->nextState("skip");
     }
 
-    public function actUndoSkipGrannyMove(): void
+    public function actUndoSkipGrannyMove(?int $clientVersion): void
     {
+        $this->checkVersion($clientVersion);
+
         if ($this->globals->get(PLAY_COUNT) > 0) {
             throw new \BgaVisibleSystemException("You may no longer move the Granny");
         }
@@ -453,8 +471,10 @@ class Game extends \Table
         $this->gamestate->nextState("undo");
     }
 
-    public function actPlayCard(#[IntParam(min: 1, max: 28)] int $card_id, #[IntParam(min: 1, max: 3)] int $location_id): void
+    public function actPlayCard(?int $clientVersion, #[IntParam(min: 1, max: 28)] int $card_id, #[IntParam(min: 1, max: 3)] int $location_id): void
     {
+        $this->checkVersion($clientVersion);
+
         $player_id = (int) $this->getActivePlayerId();
         $card = new CardManager($card_id, $this);
         $card->play($location_id, $player_id);
@@ -532,7 +552,7 @@ class Game extends \Table
         $playCount = $this->globals->get(PLAY_COUNT);
 
         if (
-            $this->globals->get(PLAY_COUNT) === 4 || 
+            $this->globals->get(PLAY_COUNT) === 4 ||
             $this->solo_isLastPlay()
         ) {
             $this->endRound();
@@ -559,7 +579,7 @@ class Game extends \Table
         $card->resolve();
 
         if (
-            $this->globals->get(PLAY_COUNT) === 4 || 
+            $this->globals->get(PLAY_COUNT) === 4 ||
             $this->solo_isLastPlay()
         ) {
             $this->endRound();
@@ -646,6 +666,7 @@ class Game extends \Table
 
         // Get information about players.
         // NOTE: you can retrieve some extra field you added for "player" table in `dbmodel.sql` if you need it.
+        $result["gameVersion"] = $this->gamestate->table_globals[300];
         $result["players"] = $this->getCollectionFromDb(
             "SELECT player_id id, player_score score, player_role role FROM player"
         );
