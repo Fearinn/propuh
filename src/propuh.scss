@@ -62,8 +62,8 @@ html {
 
 .pph_aidCard {
   background-size: 100% 100%;
-  height: calc(var(--cardHeight) * 1.5);
-  width: calc(var(--cardWidth) * 1.5);
+  height: calc(var(--cardHeight) * 1.25);
+  width: calc(var(--cardWidth) * 1.25);
 }
 
 .pph_boards {
@@ -118,12 +118,12 @@ html {
         margin-left: calc(var(--cardWidth) / -5);
       }
 
-      &[data-slot-id=granny] {
+      &[data-slot-id="granny"] {
         right: 1%;
         bottom: 5%;
       }
 
-      &[data-slot-id=propuh] {
+      &[data-slot-id="propuh"] {
         left: 1%;
         top: 5%;
       }
@@ -228,10 +228,14 @@ html {
 
 .pph_floatingHand {
   position: fixed;
-  bottom: calc(var(--cardHeight) / -4);
+  bottom: calc(var(--cardHeight) / -3);
   left: 45%;
   transform: translateX(-50%);
   z-index: 1;
+
+  .pph_trickCard-selected {
+    top: calc(var(--cardHeight) / -3);
+  }
 }
 
 .pph_trickCard {
@@ -241,7 +245,6 @@ html {
   width: var(--cardWidth);
 
   &-selected {
-    top: calc(var(--cardHeight) / -4);
     transform: unset !important;
     border: 3px solid blue;
     z-index: 1;

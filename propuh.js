@@ -70,8 +70,6 @@ define([
         buttons: [
           new BgaHelpExpandableButton({
             title: _("Player Aid"),
-            expandedWidth: "450px",
-            expandedHeight: "315px",
             foldedHtml: `<span class="pph_helpFolded">?</span>`,
             unfoldedHtml: `<div id="pph_aidContainer" class="pph_aidContainer">
               <div class="pph_aidCard" style="background-image: url(${g_gamethemeurl}/img/aid/${mainAid}.jpg)"></div>
