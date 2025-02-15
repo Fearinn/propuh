@@ -16,6 +16,20 @@
 @use "bga-zoom";
 @use "bga-cards";
 
+@font-face {
+  font-family: "Gust";
+  font-style: normal;
+  font-weight: normal;
+  src: url("img/texgyre_pagella/texgyrepagella-regular.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Gust";
+  font-style: normal;
+  font-weight: bold;
+  src: url("img/texgyre_pagella/texgyrepagella-bold.otf") format("opentype");
+}
+
 html {
   --cardWidth: 150px;
   --cardHeight: 209.6px;
@@ -29,6 +43,8 @@ html {
 }
 
 .pph_gameArea {
+  font-family: 'Gust', serif;
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -48,11 +64,13 @@ html {
 }
 
 .pph_helpFolded {
-  font-size: 32px;
+  font-family: 'Gust', serif;
+  font-size: 40px;
   font-weight: bold;
+
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: 45%;
   transform: translateX(-50%) translateY(-50%);
 }
 
