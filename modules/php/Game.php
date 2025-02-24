@@ -384,7 +384,7 @@ class Game extends \Table
 
         if ($winner_id === 1) {
             $granny_id = $this->grannyId();
-            $this->DbQuery("UPDATE player SET player_score=-1 WHERE player_id=$granny_id");
+            $this->DbQuery("UPDATE player SET player_score=0 WHERE player_id=$granny_id");
             return;
         }
 
