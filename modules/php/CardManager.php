@@ -76,7 +76,7 @@ class CardManager
 
         $location = $this->LOCATIONS[$location_id];
         $location_label = $location["label"];
-        $this->game->cards->moveCard($this->card_id, $location_id, $player_id);
+        $this->game->cards->moveCard($this->card_id, (string) $location_id, $player_id);
 
         $this->game->notify->all(
             "playCard",

@@ -61,7 +61,7 @@ class TokenManager
             return;
         }
 
-        $this->game->tokens->moveCard($this->card_id, $location_id, $this->player_id);
+        $this->game->tokens->moveCard($this->card_id, (string) $location_id, $this->player_id);
 
         $this->game->notify->all(
             "placeToken",
