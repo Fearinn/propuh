@@ -44,7 +44,7 @@ class TokenManager
         $location = (array) $this->LOCATIONS[$location_id];
         $location_label = (string) $location["label"];
 
-        $tokenCount = (int) count($this->game->tokens->getCardsOfTypeInLocation($this->role, null, $location_id));
+        $tokenCount = (int) count($this->game->tokens->getCardsOfTypeInLocation($this->role, null, (string) $location_id));
         $tokenLimit = (int) $location["limits"][$this->role];
 
         if ($tokenCount === $tokenLimit) {

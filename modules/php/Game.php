@@ -160,7 +160,7 @@ class Game extends \Table
 
     public function countPlacedTokens(int $location_id, string $player_role): int
     {
-        return count($this->tokens->getCardsOfTypeInLocation($player_role, null, $location_id));
+        return count($this->tokens->getCardsOfTypeInLocation($player_role, null, (string) $location_id));
     }
 
     public function getPlacedTokens(): array
