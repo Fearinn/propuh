@@ -51,6 +51,10 @@
         "type": "otheroption",
         "id": 100,
         "value": 4
+      },
+      {
+        "type": "maxplayers",
+        "value": 1
       }
     ],
     "default": 2
