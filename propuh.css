@@ -432,7 +432,12 @@ html {
   --standeeWidth: 87.6px;
 }
 
+#bga-zoom-wrapper {
+  direction: ltr;
+}
+
 .pph_gameArea {
+  direction: ltr;
   font-family: "Gust", serif;
   position: relative;
   display: flex;
