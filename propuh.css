@@ -498,6 +498,7 @@ html {
 }
 .pph_boards .pph_board-selectable {
   cursor: pointer;
+  border: 4px dashed black;
 }
 .pph_boards .pph_board-selected {
   border: 4px solid blue;
@@ -628,6 +629,10 @@ html {
   background-image: url("img/trickCards.jpg");
   height: var(--cardHeight);
   width: var(--cardWidth);
+}
+.pph_trickCard-selectable {
+  cursor: pointer;
+  border: 3px dashed black;
 }
 .pph_trickCard-selected {
   transform: unset !important;

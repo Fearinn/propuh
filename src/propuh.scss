@@ -114,6 +114,7 @@ html {
 
     &-selectable {
       cursor: pointer;
+      border: 4px dashed black;
     }
 
     &-selected {
@@ -266,6 +267,11 @@ html {
   background-image: url("img/trickCards.jpg");
   height: var(--cardHeight);
   width: var(--cardWidth);
+
+  &-selectable {
+    cursor: pointer;
+    border: 3px dashed black;
+  }
 
   &-selected {
     transform: unset !important;

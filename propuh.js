@@ -93,6 +93,7 @@ define([
       this.pph.managers.trick = new CardManager(this, {
         cardHeight: 209.6,
         cardWidth: 150,
+        selectableCardClass: "pph_trickCard-selectable",
         selectedCardClass: "pph_trickCard-selected",
         getId: (card) => `trick-${card.id}`,
         setupDiv: (card, element) => {
@@ -451,10 +452,9 @@ define([
       playSound(soundId);
 
       if (duration) {
-        setTimeout((
-        ) => {
-          stopSound(soundId)
-        }, duration); 
+        setTimeout(() => {
+          stopSound(soundId);
+        }, duration);
       }
     },
 
