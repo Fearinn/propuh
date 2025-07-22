@@ -290,11 +290,13 @@ html {
   margin: 0;
   padding: 4px !important;
   max-height: var(--boardHeight);
+  max-width: var(--boardWidth);
 
   .pph_goals {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    width: 50%;
   }
 
   .pph_goal {
