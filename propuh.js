@@ -582,7 +582,7 @@ define([
 
       this.pph.stocks.trick[card.location].addCard(card, {
         fromElement:
-          player_id == this.player_id
+          player_id != this.player_id && player_id != 1
             ? document.getElementById(`pph_voidHand-${player_id}`)
             : undefined,
         fromStock: player_id == 1 ? this.pph.stocks.trick.deck : undefined,
